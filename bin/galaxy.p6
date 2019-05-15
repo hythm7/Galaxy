@@ -3,4 +3,4 @@
 use lib 'lib';
 use Galaxy;
 
-say Galaxy.new;
+Galaxy.new;

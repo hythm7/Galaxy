@@ -1,54 +1,74 @@
 #no precompilation;
 #use Grammar::Tracer;
 
+use Galaxy::Grammar::Star;
+
 grammar Galaxy::Grammar::Cmd {
+  also does Galaxy::Grammar::Star;
 
   proto rule TOP { * }
-  rule TOP:sym<gravity>   { <.ws> <gravity>   <grvlaw>* % <.ws> }
-  rule TOP:sym<blackhole> { <.ws> <blackhole> <blklaw>* % <.ws> }
-  #rule TOP:sym<spacetime> { <.ws> <spacetime> <sptlaw>* % <.ws> }
-  rule TOP:sym<star>      { <.ws> <star>      <strlaw>* % <.ws> }
-  rule TOP:sym<planet>    { <.ws> <planet>    <pltlaw>* % <.ws> 'etc' }
-  rule TOP:sym<galaxy>    { <.ws> <galaxy>    <glxlaw>* % <.ws> }
+
+  rule TOP:sym<gravity>   { <gravity>   <grvlaw>*        }
+  rule TOP:sym<blackhole> { <blackhole> <blklaw>*        }
+  rule TOP:sym<spacetime> { <spacetime> <sptlaw>*        }
+  rule TOP:sym<star>      { <star>      <strlaw>*        }
+  rule TOP:sym<planet>    { <planet>    <pltlaw>* <path> }
+  rule TOP:sym<galaxy>    { <galaxy>    <glxlaw>*        }
+
 
   proto rule glxlaw { * }
-  rule glxlaw:sym<pretty> { <.ws> <sym> }
-  rule glxlaw:sym<cool>   { <.ws> <sym> }
-  rule glxlaw:sym<yolo>   { <.ws> <sym> }
-  rule glxlaw:sym<core>   { <.ws> <sym> <core> }
-  rule glxlaw:sym<origin> { <.ws> <sym> <path> }
-  rule glxlaw:sym<name>   { <.ws> <sym> \w+ }
+
+  rule glxlaw:sym<pretty> { «<sym>» }
+  rule glxlaw:sym<cool>   { «<sym>» }
+  rule glxlaw:sym<yolo>   { «<sym>» }
+
+  rule glxlaw:sym<core>   { «<sym> <core>»     }
+  rule glxlaw:sym<origin> { «<sym> <path>»     }
+  rule glxlaw:sym<name>   { «<sym> <hostname>» }
+
 
   proto rule grvlaw { * }
-  rule grvlaw:sym<origin>  { <.ws> <sym> <path> }
-  rule grvlaw:sym<cluster> { <.ws> <sym> }
+
+  rule grvlaw:sym<origin>  { «<sym> <path>» }
+  rule grvlaw:sym<cluster> { «<sym>» }
+
 
   proto rule blklaw { * }
-  token blklaw:sym<origin>  { <.ws> <sym> <path> }
-  token blklaw:sym<cluster> { <.ws> <sym> }
+
+  token blklaw:sym<origin>  { «<sym> <path>» }
+  token blklaw:sym<cluster> { «<sym>» }
+
 
   proto rule pltlaw { * }
+
+
   proto token core { * }
+
   token core:sym<x86_64> { <sym> }
   token core:sym<i386>   { <sym> }
 
+  token hostname { (\w+) ( <dot> \w+ )* }
+
   token path { <[ a..z A..Z 0..9 \-_.!~*'():@&=+$,/ ]>+ }
 
-  token galaxy    { 'galaxy'    | <?> }
-	token gravity   { 'gravity'   | 'g' }
-	token blackhole { 'blackhole' | 'b' }
-	token spacetime { 'spacetime' | 't' }
-	token star      { 'star'      | 's' }
-	token planet    { 'planet'    | 'p' }
+  token galaxy    { «'galaxy'»    | <?> }
+	token gravity   { «'gravity'»   | «'g'» }
+	token blackhole { «'blackhole'» | «'b'» }
+	token spacetime { «'spacetime'» | «'t'» }
+	token star      { «'star'»      | «'s'» }
+	token planet    { «'planet'»    | «'p'» }
 
   token lt  { '<' }
   token gt  { '>' }
-  token ws  { \h* }
-  token nl  { \n+ }
+  token dot { '.' }
+
+  token ws { \h* }
+  token nl { \n+ }
 }
 
 
 class Galaxy::Grammar::Cmd::Actions {
+  also does Galaxy::Grammar::Star::Actions;
 
   method TOP:sym<galaxy>    ( $/ ) { make <galaxy>    => $<glxlaw>».ast.hash }
   method TOP:sym<gravity>   ( $/ ) { make <gravity>   => $<grvlaw>».ast.hash }

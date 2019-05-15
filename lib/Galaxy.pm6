@@ -34,6 +34,7 @@ unit class Galaxy:ver<0.0.1>;
 
 
 
+   say $cmd;
     my %laws = $cnf;
     my $name = %laws<galaxy><name> // chomp qx<hostname>;
 
@@ -58,5 +59,5 @@ unit class Galaxy:ver<0.0.1>;
   #  $!db        = self!db;
 	#	%!stars     = self!local-stars;   #Revist
 
-  #  
+  #
 	#}
