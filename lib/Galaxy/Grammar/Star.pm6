@@ -3,18 +3,18 @@
 
 role Galaxy::Grammar::Star {
 
-  token TOP { «<star>» }
+  token TOP { <starname> }
 
-  proto token star { * }
+  proto token starname { * }
 
-  token star:sym<tag>  { <name> <.hyphen> <age> <.hyphen> <core> <.hyphen> <form> <.hyphen> <tag> <ext>? }
-  token star:sym<form> { <name> <.hyphen> <age> <.hyphen> <core> <.hyphen> <form> <ext>? }
-  token star:sym<core> { <name> <.hyphen> <age> <.hyphen> <core> }
-  token star:sym<age>  { <name> <.hyphen> <age> }
-  token star:sym<name> { <name> }
+  token starname:sym<tag>  { <name> <.hyphen> <age> <.hyphen> <core> <.hyphen> <form> <.hyphen> <tag> <ext>? }
+  token starname:sym<form> { <name> <.hyphen> <age> <.hyphen> <core> <.hyphen> <form> <ext>? }
+  token starname:sym<core> { <name> <.hyphen> <age> <.hyphen> <core> }
+  token starname:sym<age>  { <name> <.hyphen> <age> }
+  token starname:sym<name> { <name> }
 
-  token name { [ <.alnum>+ <!before <dot>> ]+ % <hyphen> }
-  token age  { [ [ $<agepart> = [ <.digit>+ | '*' ] ]+ % <dot> ] <plus>? }
+  token name { [ [ <.alnum>+ <!before <dot>> ]+ % <hyphen> ] }
+  token age  { [ [ <.digit>+ | '*' ]+ % <dot> ] <plus>? }
   token core { 'x86_64' | 'i386' }
   token form { <.digit>+ }
   token tag  { <.alnum>+ }
@@ -30,22 +30,22 @@ role Galaxy::Grammar::Star {
 
 role Galaxy::Grammar::Star::Actions {
 
-  method TOP ( $/ ) { make $<star>.ast }
+  method TOP ( $/ ) { make $<starname>.ast }
 
-  method star:sym<name> ( $/ ) {
+  method starname:sym<name> ( $/ ) {
     my $name = $<name>.Str;
 
     make  { :$name }
   }
 
-  method star:sym<age> ( $/ ) {
+  method starname:sym<age> ( $/ ) {
     my $name = $<name>.Str;
     my $age  = $<age>.ast;
 
     make  { :$name, :$age }
   }
 
-  method star:sym<core> ( $/ ) {
+  method starname:sym<core> ( $/ ) {
     my $name = $<name>.Str;
     my $age  = $<age>.ast;
     my $core = $<core>.Str;
@@ -54,7 +54,7 @@ role Galaxy::Grammar::Star::Actions {
   }
 
 
-  method star:sym<form> ( $/ ) {
+  method starname:sym<form> ( $/ ) {
     my $name = $<name>.Str;
     my $age  = $<age>.ast;
     my $core = $<core>.Str;
@@ -63,7 +63,7 @@ role Galaxy::Grammar::Star::Actions {
     make  { :$name, :$age, :$core, :$form }
   }
 
-  method star:sym<tag> ( $/ ) {
+  method starname:sym<tag> ( $/ ) {
     my $name = $<name>.Str;
     my $age  = $<age>.ast;
     my $core = $<core>.Str;

@@ -18,46 +18,44 @@ unit class Galaxy:ver<0.0.1>;
   # has Star      $!stars;
 
   method new ( ) {
+
+    use Hash::Merge::Augment;
     my $cmd = Galaxy::Grammar::Cmd.new.parse(@*ARGS, actions => Galaxy::Grammar::Cmd::Actions).ast;
-
-
-    my $origin   = $cmd<origin> // '/'.IO;
-
-    my $bulge    = $origin.add: '/etc/galaxy';
-    my $halo     = $origin.add: '/var/galaxy';
-
-    my $lawsfile = $bulge.add: 'laws';
-    my $disk     = $halo.add:  '/galaxy.db';
+    my $origin   = $cmd<galaxy><origin> // '/'.IO;
+    my $lawsfile = $origin.add: '/etc/galaxy/laws';
 
     # now laws file? generate one!
     my $cnf = Galaxy::Grammar::Cnf.new.parsefile($lawsfile, actions => Galaxy::Grammar::Cnf::Actions).ast;
 
+    my %laws = $cnf.merge: $cmd;
+
+    my %galaxy    = %laws<galaxy>;
+    my %gravity   = %laws<gravity>;
+    my %blackhole = %laws<blackhole>;
 
 
-   say $cmd;
-    my %laws = $cnf;
-    my $name = %laws<galaxy><name> // chomp qx<hostname>;
-
-    self.bless: |%laws<galaxy>;
+    self.bless: :%galaxy, :%gravity, :%blackhole;
   }
 
-  #submethod BUILD (
-  #  :$!name    = chomp qx<hostname>;
-  #  :$!core    = chomp qx<uname -m>;
-  #  :$!origin  = </>.IO;
-  #  :$!bulge   = $!origin.add(</etc/galaxy>.IO).cleanup;
-  #  :$!halo    = $!origin.add(</var/galaxy>.IO).cleanup;
-  #  :$!disk    = $!halo.add(</galaxy.db>.IO).cleanup;
-  #  :$!yolo    = False;
-  #  :$!cool    = False;
-  #  :$!pretty  = False;
+  submethod BUILD ( :%galaxy, :%gravity, :%blackhole ) {
+
+    $!origin = %galaxy<origin> // </>.IO;
+    $!bulge  = $!origin.add: '/etc/galaxy'.IO;
+    $!halo   = $!origin.add: '/var/galaxy'.IO;
+    $!disk   = $!halo.add:   '/galaxy.db'.IO;
+
+    $!name   = %galaxy<name>   // chomp qx<hostname>;
+    $!core   = %galaxy<core>   // chomp qx<uname -m>;
+    $!yolo   = %galaxy<yolo>   // False;
+    $!cool   = %galaxy<cool>   // False;
+    $!pretty = %galaxy<pretty> // False;
   #  :$!gravity;
   #  #:$!blackhole;
   #  :$!nebula;
-	#  ) {
 
   #  $!db        = self!db;
 	#	%!stars     = self!local-stars;   #Revist
 
   #
-	#}
+  say self;
+	}

@@ -1,7 +1,9 @@
 < galaxy >
   pretty 
   core x86_64 
-  cool
+<blackhole>
+  cluster
+  origin /delme
 <gravity>
   cluster
   origin /tmp

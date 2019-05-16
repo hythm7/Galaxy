@@ -8,42 +8,39 @@ grammar Galaxy::Grammar::Cmd {
 
   proto rule TOP { * }
 
-  rule TOP:sym<gravity>   { <gravity>   <grvlaw>*        }
-  rule TOP:sym<blackhole> { <blackhole> <blklaw>*        }
-  rule TOP:sym<spacetime> { <spacetime> <sptlaw>*        }
-  rule TOP:sym<star>      { <star>      <strlaw>*        }
-  rule TOP:sym<planet>    { <planet>    <pltlaw>* <path> }
-  rule TOP:sym<galaxy>    { <galaxy>    <glxlaw>*        }
+  rule TOP:sym<gravity>   { <glxlaw>* <gravity>   <grvlaw>* <stars>  }
+  rule TOP:sym<blackhole> { <glxlaw>* <blackhole> <blklaw>* <stars>  }
+  rule TOP:sym<spacetime> { <glxlaw>* <spacetime> <sptlaw>*          }
+  rule TOP:sym<star>      { <glxlaw>* <star>      <strlaw>* <stars>  }
+  rule TOP:sym<planet>    { <glxlaw>* <planet>    <pltlaw>* <path>   }
+  rule TOP:sym<galaxy>    { <galaxy>  <glxlaw>*   <stars>? }
 
 
   proto rule glxlaw { * }
-
   rule glxlaw:sym<pretty> { «<sym>» }
   rule glxlaw:sym<cool>   { «<sym>» }
-  rule glxlaw:sym<yolo>   { «<sym>» }
-
+  rule glxlaw:sym<yolo>   { «<yolo>» }
   rule glxlaw:sym<core>   { «<sym> <core>»     }
-  rule glxlaw:sym<origin> { «<sym> <path>»     }
+  rule glxlaw:sym<origin> { «<origin> <path>»     }
   rule glxlaw:sym<name>   { «<sym> <hostname>» }
 
 
   proto rule grvlaw { * }
-
-  rule grvlaw:sym<origin>  { «<sym> <path>» }
-  rule grvlaw:sym<cluster> { «<sym>» }
+  rule grvlaw:sym<origin>  { «<origin> <path>» }
+  rule grvlaw:sym<cluster> { «<cluster>» }
 
 
   proto rule blklaw { * }
-
-  token blklaw:sym<origin>  { «<sym> <path>» }
-  token blklaw:sym<cluster> { «<sym>» }
+  token blklaw:sym<origin>  { «<origin> <path>» }
+  token blklaw:sym<cluster> { «<cluster>» }
 
 
   proto rule pltlaw { * }
+  proto rule strlaw { * }
+  proto rule sptlaw { * }
 
 
   proto token core { * }
-
   token core:sym<x86_64> { <sym> }
   token core:sym<i386>   { <sym> }
 
@@ -54,9 +51,17 @@ grammar Galaxy::Grammar::Cmd {
   token galaxy    { «'galaxy'»    | <?> }
 	token gravity   { «'gravity'»   | «'g'» }
 	token blackhole { «'blackhole'» | «'b'» }
-	token spacetime { «'spacetime'» | «'t'» }
-	token star      { «'star'»      | «'s'» }
+	token spacetime { «'spacetime'» | «'t'» | «'⏲'» }
+	token star      { «'star'»      | «'s'» | «''» }
 	token planet    { «'planet'»    | «'p'» }
+
+  token origin  { 'origin'  | 'o' }
+  token cluster { 'cluster' | 'c' }
+
+  token pretty  { 'pretty'  | 'p' | '‽' }
+  token yolo    { 'yolo'    | 'y' | '✓' }
+
+  token stars { [ <starname>+ % <.blank> ] }
 
   token lt  { '<' }
   token gt  { '>' }
@@ -70,21 +75,67 @@ grammar Galaxy::Grammar::Cmd {
 class Galaxy::Grammar::Cmd::Actions {
   also does Galaxy::Grammar::Star::Actions;
 
-  method TOP:sym<galaxy>    ( $/ ) { make <galaxy>    => $<glxlaw>».ast.hash }
-  method TOP:sym<gravity>   ( $/ ) { make <gravity>   => $<grvlaw>».ast.hash }
-  method TOP:sym<blackhole> ( $/ ) { make <blackhole> => $<blklaw>».ast.hash }
-  method TOP:sym<spacetime> ( $/ ) { make <spacetime> => $<sptlaw>».ast.hash }
-  method TOP:sym<star>      ( $/ ) { make <star>      => $<strlaw>».ast.hash }
-  method TOP:sym<planet>    ( $/ ) { make <planet>    => $<pltlaw>».ast.hash }
+  # has %.law;
 
-  method glxlaw:sym<pretty> ( $/ ) { make ~$<sym> => True }
-  method glxlaw:sym<cool>   ( $/ ) { make ~$<sym> => True }
-  method glxlaw:sym<yolo>   ( $/ ) { make ~$<sym> => True }
-  method glxlaw:sym<core>   ( $/ ) { make ~$<sym> => ~$<core> }
-  method glxlaw:sym<origin> ( $/ ) { make ~$<sym> => ~$<path> }
+  method TOP:sym<galaxy> ( $/ ) {
+    my %laws;
 
-  method grvlaw:sym<cluster> ( $/ ) { make ~$<sym> => True }
-  method grvlaw:sym<origin> ( $/ )  { make ~$<sym> => $<path>.IO }
+    %laws<cmd>    = <galaxy>;
+    %laws<stars>  = $<stars>.ast        if $<stars>;
+    %laws<galaxy> = $<glxlaw>».ast.hash if $<glxlaw>;
+
+    make %laws;
+  }
+
+  method TOP:sym<gravity> ( $/ ) {
+    my %laws;
+
+    %laws<cmd>     = <gravity>;
+    %laws<stars>   = $<stars>.ast;
+    %laws<galaxy>  = $<glxlaw>».ast.hash if $<glxlaw>;
+    %laws<gravity> = $<grvlaw>».ast.hash if $<grvlaw>;
+
+    make %laws;
+  }
+
+  method TOP:sym<blackhole> ( $/ ) {
+    my %laws;
+
+    %laws<cmd>       = <blackhole>;
+    %laws<stars>     = $<stars>.ast;
+    %laws<galaxy>    = $<glxlaw>».ast.hash if $<glxlaw>;
+    %laws<blackhole> = $<blklaw>».ast.hash if $<blklaw>;
+
+    make %laws;
+  }
+
+  method TOP:sym<star> ( $/ ) {
+    my %laws;
+
+    %laws<cmd>    = <star>;
+    %laws<stars>  = $<stars>.ast;
+    %laws<galaxy> = $<glxlaw>».ast.hash if $<glxlaw>;
+    %laws<star>   = $<star>».ast.hash   if $<strlaw>;
+
+    make %laws;
+  }
+
+
+
+  #method TOP:sym<spacetime> ( $/ ) { make <spacetime> => $<sptlaw>».ast.hash }
+  #method TOP:sym<star>      ( $/ ) { make <star>      => $<strlaw>».ast.hash }
+  #method TOP:sym<planet>    ( $/ ) { make <planet>    => $<pltlaw>».ast.hash }
+
+  method stars ( $/ ) { make $<starname>».ast }
+
+  method glxlaw:sym<yolo>   ( $/ ) { make <yolo>     => True }
+  method glxlaw:sym<origin> ( $/ ) { make <origin>   => $<path>.IO }
+  method glxlaw:sym<pretty> ( $/ ) { make $<sym>.Str => True }
+  method glxlaw:sym<cool>   ( $/ ) { make $<sym>.Str => True }
+  method glxlaw:sym<core>   ( $/ ) { make $<sym>.Str => $<core>.Str }
+
+  method grvlaw:sym<cluster> ( $/ ) { make <cluster> => True }
+  method grvlaw:sym<origin>  ( $/ ) { make <origin>  => $<path>.IO }
 }
 
 

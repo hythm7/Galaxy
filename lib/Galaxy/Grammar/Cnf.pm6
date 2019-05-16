@@ -18,12 +18,13 @@ grammar Galaxy::Grammar::Cnf {
   rule glxlaw:sym<name>   { <.ws> <sym> \w+ }
 
   proto rule grvlaw { * }
-  rule grvlaw:sym<origin>  { <.ws> <sym> <path> }
   rule grvlaw:sym<cluster> { <.ws> <sym> }
+  rule grvlaw:sym<origin>  { <.ws> <sym> <path> }
 
   proto rule blklaw { * }
-  token blklaw:sym<origin>  { <.ws> <sym> <path> }
-  token blklaw:sym<cluster> { <.ws> <sym> }
+  rule blklaw:sym<cluster> { <.ws> <sym> }
+  rule blklaw:sym<origin>  { <.ws> <sym> <path> }
+
 
   proto token core { * }
   token core:sym<x86_64> { <sym> }
@@ -55,6 +56,9 @@ class Galaxy::Grammar::Cnf::Actions {
 
   method grvlaw:sym<cluster> ( $/ ) { make ~$<sym> => True }
   method grvlaw:sym<origin> ( $/ )  { make ~$<sym> => $<path>.IO }
+
+  method blklaw:sym<cluster> ( $/ ) { make ~$<sym> => True }
+  method blklaw:sym<origin> ( $/ )  { make ~$<sym> => $<path>.IO }
 }
 
 
