@@ -1,9 +1,9 @@
 < galaxy >
   pretty 
+  yolo
   core x86_64 
 <blackhole>
   cluster
   origin /delme
 <gravity>
   cluster
-  origin /tmp

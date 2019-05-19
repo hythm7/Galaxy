@@ -80,9 +80,9 @@ class Galaxy::Grammar::Cmd::Actions {
   method TOP:sym<galaxy> ( $/ ) {
     my %laws;
 
-    %laws<cmd>    = <galaxy>;
-    %laws<stars>  = $<stars>.ast        if $<stars>;
-    %laws<galaxy> = $<glxlaw>».ast.hash if $<glxlaw>;
+    %laws<cmd>           = <galaxy>;
+    %laws<galaxy>        = $<glxlaw>».ast.hash if $<glxlaw>;
+    %laws<galaxy><stars> = $<stars>.ast        if $<stars>;
 
     make %laws;
   }
@@ -90,10 +90,10 @@ class Galaxy::Grammar::Cmd::Actions {
   method TOP:sym<gravity> ( $/ ) {
     my %laws;
 
-    %laws<cmd>     = <gravity>;
-    %laws<stars>   = $<stars>.ast;
-    %laws<galaxy>  = $<glxlaw>».ast.hash if $<glxlaw>;
-    %laws<gravity> = $<grvlaw>».ast.hash if $<grvlaw>;
+    %laws<cmd>            = <gravity>;
+    %laws<galaxy>         = $<glxlaw>».ast.hash if $<glxlaw>;
+    %laws<gravity>        = $<grvlaw>».ast.hash if $<grvlaw>;
+    %laws<gravity><stars> = $<stars>.ast;
 
     make %laws;
   }
@@ -101,10 +101,10 @@ class Galaxy::Grammar::Cmd::Actions {
   method TOP:sym<blackhole> ( $/ ) {
     my %laws;
 
-    %laws<cmd>       = <blackhole>;
-    %laws<stars>     = $<stars>.ast;
-    %laws<galaxy>    = $<glxlaw>».ast.hash if $<glxlaw>;
-    %laws<blackhole> = $<blklaw>».ast.hash if $<blklaw>;
+    %laws<cmd>              = <blackhole>;
+    %laws<galaxy>           = $<glxlaw>».ast.hash if $<glxlaw>;
+    %laws<blackhole>        = $<blklaw>».ast.hash if $<blklaw>;
+    %laws<blackhole><stars> = $<stars>.ast;
 
     make %laws;
   }
@@ -112,10 +112,10 @@ class Galaxy::Grammar::Cmd::Actions {
   method TOP:sym<star> ( $/ ) {
     my %laws;
 
-    %laws<cmd>    = <star>;
-    %laws<stars>  = $<stars>.ast;
-    %laws<galaxy> = $<glxlaw>».ast.hash if $<glxlaw>;
-    %laws<star>   = $<star>».ast.hash   if $<strlaw>;
+    %laws<cmd>         = <star>;
+    %laws<galaxy>      = $<glxlaw>».ast.hash if $<glxlaw>;
+    %laws<star>        = $<star>».ast.hash   if $<strlaw>;
+    %laws<star><stars> = $<stars>.ast;
 
     make %laws;
   }
