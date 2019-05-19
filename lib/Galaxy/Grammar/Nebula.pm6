@@ -1,0 +1,3 @@
+grammar Galaxy::Grammar::Nebula {
+
+}

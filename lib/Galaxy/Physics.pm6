@@ -43,8 +43,6 @@ unit role Galaxy::Physics;
     $!cool   = %!laws<galaxy><cool>   // False;
     $!pretty = %!laws<galaxy><pretty> // False;
 
-    say %!laws<gravity>;
-
     given %!laws<cmd> {
 
       self.galaxy(    |%!laws<galaxy>    ) when 'galaxy';
