@@ -16,7 +16,7 @@ unit class Galaxy:ver<0.0.1>;
     say '--- gravity ---';
   }
 
-  method blackhole ( :@stars!  ) {
+  method blackhole ( :$cluster = False, :@stars!  ) {
 
     say '--- blackhole ---';
   }
