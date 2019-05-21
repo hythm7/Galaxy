@@ -1,6 +1,6 @@
 < galaxy >
   pretty 
-  yolo
+  # yolo
   core x86_64 
 <blackhole>
   cluster

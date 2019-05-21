@@ -1,7 +1,8 @@
 <local>
-http://localhost:20000
+#disable
+location http://localhost:20000
 
 #<galaxy>
-#http://galaxy.xyz:443
+#location /tmp
 #disable
 

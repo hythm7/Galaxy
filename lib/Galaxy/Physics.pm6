@@ -1,10 +1,11 @@
 use Hash::Merge::Augment;
 use Galaxy::Grammar::Cmd;
 use Galaxy::Grammar::Cnf;
+use Galaxy::Grammar::Nebula;
 
 unit role Galaxy::Physics;
 
-  has %.laws;
+  has %.law;
 
   has Str       $!name;
   has Str       $!core;
@@ -15,10 +16,6 @@ unit role Galaxy::Physics;
   has Bool      $!yolo;
   has Bool      $!cool;
   has Bool      $!pretty;
-  # has Nebula    $!nebula;
-  # has Gravity   $!gravity;
-  # has Blackhole $!blackhole;
-  # has Star      $!stars;
 
   submethod BUILD ( ) {
 
@@ -30,27 +27,29 @@ unit role Galaxy::Physics;
     $!disk   = $!halo.add:   'galaxy.db';
 
 
-    my $lawsfile = $!origin.add: 'etc/galaxy/laws';
+    my $lawfile    = $!origin.add: 'etc/galaxy/law';
+    my $nebulafile  = $!origin.add: 'etc/galaxy/nebula';
 
-    # now laws file? generate one!
-    my $cnf = Galaxy::Grammar::Cnf.new.parsefile($lawsfile, actions => Galaxy::Grammar::Cnf::Actions).ast;
+    # now law file? generate one!
+    my $cnf = Galaxy::Grammar::Cnf.new.parsefile($lawfile, actions => Galaxy::Grammar::Cnf::Actions).ast;
+    my $nbl = Galaxy::Grammar::Nebula.parsefile($nebulafile, actions => Galaxy::Grammar::Nebula::Actions).ast;
 
-    %!laws = $cnf.merge: $cmd;
+    %!law   = $cnf.merge: $cmd.merge: $nbl;
 
-    $!name   = %!laws<galaxy><name>   // chomp qx<hostname>;
-    $!core   = %!laws<galaxy><core>   // chomp qx<uname -m>;
-    $!yolo   = %!laws<galaxy><yolo>   // False;
-    $!cool   = %!laws<galaxy><cool>   // False;
-    $!pretty = %!laws<galaxy><pretty> // False;
+    $!name   = %!law<galaxy><name>   // chomp qx<hostname>;
+    $!core   = %!law<galaxy><core>   // chomp qx<uname -m>;
+    $!yolo   = %!law<galaxy><yolo>   // False;
+    $!cool   = %!law<galaxy><cool>   // False;
+    $!pretty = %!law<galaxy><pretty> // False;
 
-    given %!laws<cmd> {
+    given %!law<cmd> {
 
-      self.galaxy(    |%!laws<galaxy>    ) when 'galaxy';
-      self.star(      |%!laws<star>      ) when 'star';
-      self.planet(    |%!laws<planet>    ) when 'planet';
-      self.gravity(   |%!laws<gravity>   ) when 'gravity';
-      self.blackhole( |%!laws<blackhole> ) when 'blackhole';
-      self.spacetime( |%!laws<spacetime> ) when 'spacetime';
+      self.galaxy(    |%!law<galaxy>    ) when 'galaxy';
+      self.star(      |%!law<star>      ) when 'star';
+      self.planet(    |%!law<planet>    ) when 'planet';
+      self.gravity(   |%!law<gravity>   ) when 'gravity';
+      self.blackhole( |%!law<blackhole> ) when 'blackhole';
+      self.spacetime( |%!law<spacetime> ) when 'spacetime';
 
     }
 

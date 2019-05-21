@@ -1,37 +1,64 @@
 use Galaxy::Physics;
+use Galaxy::Gravity;
+use Galaxy::Blackhole;
+use Galaxy::Spacetime;
+use Galaxy::Star;
+use Galaxy::Planet;
+use Galaxy::Nebula;
 
 unit class Galaxy:ver<0.0.1>;
   also does Galaxy::Physics;
 
-  multi method galaxy ( :@stars ) {
-    say '--- galaxy star ---';
-  }
+has Gravity   $!gravity;
+has Blackhole $!blackhole;
+has Star      $!star;
+has Planet    $!planet;
+has Spacetime $!spacetime;
+has Nebula    @!nebula;
 
-  multi method galaxy ( :$event ) {
-    say '--- galaxy event ---';
-  }
+submethod TWEAK ( ) {
 
-  method gravity ( :$origin = $!origin, :$core = $!core, :$cluster = False, :@stars!  ) {
+  $!gravity   = Gravity.new;
+  $!blackhole = Blackhole.new;
+  $!spacetime = Spacetime.new;
+  $!star      = Star.new;
+  $!planet    = Planet.new;
 
-    say '--- gravity ---';
-  }
+}
 
-  method blackhole ( :$cluster = False, :@stars!  ) {
+multi method galaxy ( ) {
+  say '--- galaxy ---';
+}
 
-    say '--- blackhole ---';
-  }
+multi method galaxy ( :@stars! ) {
+  say '--- galaxy star ---';
+}
 
-  method planet ( :$planet!  ) {
+multi method galaxy ( :$event! ) {
+  say '--- galaxy event ---';
+}
 
-    say '--- planet ---';
-  }
+method gravity ( :$origin = $!origin, :$core = $!core, :$cluster = False, :@stars!  ) {
 
-  method star ( :@stars!  ) {
+  say '--- gravity ---';
+}
 
-    say '--- star ---';
-  }
+method blackhole ( :$cluster = False, :@stars!  ) {
 
-  method spacetime ( :$event!  ) {
+  say '--- blackhole ---';
+}
 
-    say '--- spacetime ---';
-  }
+method planet ( :$planet!  ) {
+
+  say '--- planet ---';
+}
+
+method star ( :@stars!  ) {
+
+  say '--- star ---';
+}
+
+method spacetime ( :$event!  ) {
+
+  say '--- spacetime ---';
+}

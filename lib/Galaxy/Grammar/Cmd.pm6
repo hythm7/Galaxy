@@ -94,71 +94,69 @@ grammar Galaxy::Grammar::Cmd {
 class Galaxy::Grammar::Cmd::Actions {
   also does Galaxy::Grammar::Star::Actions;
 
-  # has %.law;
-
   method TOP:sym<galaxy> ( $/ ) {
-    my %laws;
+    my %law;
 
-    %laws<cmd>           = <galaxy>;
-    %laws<galaxy>        = $<glxlaw>».ast.hash if $<glxlaw>;
-    %laws<galaxy><stars> = $<stars>.ast        if $<stars>;
+    %law<cmd>           = <galaxy>;
+    %law<galaxy>        = $<glxlaw>».ast.hash if $<glxlaw>;
+    %law<galaxy><stars> = $<stars>.ast        if $<stars>;
 
-    make %laws;
+    make %law;
   }
 
   method TOP:sym<gravity> ( $/ ) {
-    my %laws;
+    my %law;
 
-    %laws<cmd>            = <gravity>;
-    %laws<galaxy>         = $<glxlaw>».ast.hash if $<glxlaw>;
-    %laws<gravity>        = $<grvlaw>».ast.hash if $<grvlaw>;
-    %laws<gravity><stars> = $<stars>.ast;
+    %law<cmd>            = <gravity>;
+    %law<galaxy>         = $<glxlaw>».ast.hash if $<glxlaw>;
+    %law<gravity>        = $<grvlaw>».ast.hash if $<grvlaw>;
+    %law<gravity><stars> = $<stars>.ast;
 
-    make %laws;
+    make %law;
   }
 
   method TOP:sym<blackhole> ( $/ ) {
-    my %laws;
+    my %law;
 
-    %laws<cmd>              = <blackhole>;
-    %laws<galaxy>           = $<glxlaw>».ast.hash if $<glxlaw>;
-    %laws<blackhole>        = $<blklaw>».ast.hash if $<blklaw>;
-    %laws<blackhole><stars> = $<stars>.ast;
+    %law<cmd>              = <blackhole>;
+    %law<galaxy>           = $<glxlaw>».ast.hash if $<glxlaw>;
+    %law<blackhole>        = $<blklaw>».ast.hash if $<blklaw>;
+    %law<blackhole><stars> = $<stars>.ast;
 
-    make %laws;
+    make %law;
   }
 
   method TOP:sym<star> ( $/ ) {
-    my %laws;
+    my %law;
 
-    %laws<cmd>         = <star>;
-    %laws<galaxy>      = $<glxlaw>».ast.hash if $<glxlaw>;
-    %laws<star>        = $<star>».ast.hash   if $<strlaw>;
-    %laws<star><stars> = $<stars>.ast;
+    %law<cmd>         = <star>;
+    %law<galaxy>      = $<glxlaw>».ast.hash if $<glxlaw>;
+    %law<star>        = $<star>».ast.hash   if $<strlaw>;
+    %law<star><stars> = $<stars>.ast;
 
-    make %laws;
+    make %law;
   }
 
   method TOP:sym<planet> ( $/ ) {
-    my %laws;
+    my %law;
 
-    %laws<cmd>            = <planet>;
-    %laws<galaxy>         = $<glxlaw>».ast.hash if $<glxlaw>;
-    %laws<planet>         = $<star>».ast.hash   if $<strlaw>;
-    %laws<planet><planet> = $<path>.IO;
+    %law<cmd>            = <planet>;
+    %law<galaxy>         = $<glxlaw>».ast.hash if $<glxlaw>;
+    %law<planet>         = $<star>».ast.hash   if $<strlaw>;
+    %law<planet><planet> = $<path>.IO;
 
-    make %laws;
+    make %law;
   }
 
   method TOP:sym<spacetime> ( $/ ) {
-    my %laws;
+    my %law;
 
-    %laws<cmd>              = <spacetime>;
-    %laws<galaxy>           = $<glxlaw>».ast.hash if $<glxlaw>;
-    %laws<spacetime>        = $<star>».ast.hash   if $<strlaw>;
-    %laws<spacetime><event> = $<event>.Str;
+    %law<cmd>              = <spacetime>;
+    %law<galaxy>           = $<glxlaw>».ast.hash if $<glxlaw>;
+    %law<spacetime>        = $<star>».ast.hash   if $<strlaw>;
+    %law<spacetime><event> = $<event>.Str;
 
-    make %laws;
+    make %law;
   }
 
 

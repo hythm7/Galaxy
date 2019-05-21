@@ -2,12 +2,12 @@ grammar Galaxy::Grammar::Cnf {
 
   token TOP { <sections> }
 
-  token sections { <section>* %% <.nl> }
+  token sections { <.ws> <section>* %% <.nl> }
 
   proto rule section { * }
-  rule section:sym<galaxy>    { <.ws> <lt> <sym> <gt> <.nl> <glxlaw>+ % <.nl> }
-  rule section:sym<gravity>   { <.ws> <lt> <sym> <gt> <.nl> <grvlaw>+ % <.nl> }
-  rule section:sym<blackhole> { <.ws> <lt> <sym> <gt> <.nl> <blklaw>+ % <.nl> }
+  rule section:sym<galaxy>    { <lt> <sym> <gt> <.nl> <glxlaw>+ % <.nl> }
+  rule section:sym<gravity>   { <lt> <sym> <gt> <.nl> <grvlaw>+ % <.nl> }
+  rule section:sym<blackhole> { <lt> <sym> <gt> <.nl> <blklaw>+ % <.nl> }
 
   proto rule glxlaw { * }
   rule glxlaw:sym<pretty> { <.ws> <sym> }
@@ -32,10 +32,13 @@ grammar Galaxy::Grammar::Cnf {
 
   token path { <[ a..z A..Z 0..9 \-_.!~*'():@&=+$,/ ]>+ }
 
+  token nl { [ <comment>? \h* \n ]+ }
+
+  token comment { \h* '#' \N* }
+
   token lt  { '<' }
   token gt  { '>' }
   token ws  { \h* }
-  token nl  { \n+ }
 }
 
 
