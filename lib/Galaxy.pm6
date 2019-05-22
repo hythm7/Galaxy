@@ -9,20 +9,13 @@ use Galaxy::Nebula;
 unit class Galaxy:ver<0.0.1>;
   also does Galaxy::Physics;
 
-has Gravity   $!gravity;
-has Blackhole $!blackhole;
-has Star      $!star;
-has Planet    $!planet;
-has Spacetime $!spacetime;
+has Star      %!star;
 has Nebula    @!nebula;
 
 submethod TWEAK ( ) {
+  @!nebula = do for |%!law<nebula> { Nebula.new: |$^nebula }
 
-  $!gravity   = Gravity.new;
-  $!blackhole = Blackhole.new;
-  $!spacetime = Spacetime.new;
-  $!star      = Star.new;
-  $!planet    = Planet.new;
+  say @!nebula;
 
 }
 
@@ -38,27 +31,24 @@ multi method galaxy ( :$event! ) {
   say '--- galaxy event ---';
 }
 
-method gravity ( :$origin = $!origin, :$core = $!core, :$cluster = False, :@stars!  ) {
-
+method gravity ( :$origin = $!origin, :$cluster = False, :@stars!  ) {
   say '--- gravity ---';
+
+  #say @stars;
 }
 
 method blackhole ( :$cluster = False, :@stars!  ) {
-
   say '--- blackhole ---';
 }
 
 method planet ( :$planet!  ) {
-
   say '--- planet ---';
 }
 
 method star ( :@stars!  ) {
-
   say '--- star ---';
 }
 
 method spacetime ( :$event!  ) {
-
   say '--- spacetime ---';
 }

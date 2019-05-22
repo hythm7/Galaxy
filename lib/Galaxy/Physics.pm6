@@ -19,7 +19,7 @@ unit role Galaxy::Physics;
 
   submethod BUILD ( ) {
 
-    my $cmd = Galaxy::Grammar::Cmd.new.parse(@*ARGS, actions => Galaxy::Grammar::Cmd::Actions).ast;
+    my $cmd = Galaxy::Grammar::Cmd.new.parse(@*ARGS, :actions(Galaxy::Grammar::Cmd::Actions)).ast;
 
     $!origin = $cmd<galaxy><origin> // '/'.IO;
     $!bulge  = $!origin.add: 'etc/galaxy/';
@@ -28,11 +28,11 @@ unit role Galaxy::Physics;
 
 
     my $lawfile    = $!origin.add: 'etc/galaxy/law';
-    my $nebulafile  = $!origin.add: 'etc/galaxy/nebula';
+    my $nblfile  = $!origin.add: 'etc/galaxy/nebula';
 
     # now law file? generate one!
-    my $cnf = Galaxy::Grammar::Cnf.new.parsefile($lawfile, actions => Galaxy::Grammar::Cnf::Actions).ast;
-    my $nbl = Galaxy::Grammar::Nebula.parsefile($nebulafile, actions => Galaxy::Grammar::Nebula::Actions).ast;
+    my $cnf = Galaxy::Grammar::Cnf.new.parsefile($lawfile, :actions(Galaxy::Grammar::Cnf::Actions)).ast;
+    my $nbl = Galaxy::Grammar::Nebula.parsefile($nblfile, :actions(Galaxy::Grammar::Nebula::Actions)).ast;
 
     %!law   = $cnf.merge: $cmd.merge: $nbl;
 

@@ -4,9 +4,8 @@ use Cro::Uri;
 
 grammar Galaxy::Grammar::Nebula {
 
-  token TOP { <nebulas> }
 
-  token nebulas { <.ws> <nebula>* %% <.nl> }
+  token TOP { <.ws> <nebula>* %% <.nl> }
 
   rule nebula   { <lt> <hostname> <gt> <.nl> <nbllaw>+ % <.nl> }
 
@@ -38,9 +37,8 @@ grammar Galaxy::Grammar::Nebula {
 
 
 class Galaxy::Grammar::Nebula::Actions {
-  method TOP ( $/ ) { make <nebula> => $<nebulas>.ast }
+  method TOP ( $/ ) { make <nebula> => @<nebula>».ast }
 
-  method nebulas ( $/ ) { make $<nebula>».ast }
   method nebula ( $/ ) { make $<hostname>.Str => $<nbllaw>».ast.hash }
 
   method nbllaw:sym<disable> ( $/ ) { make ~$<sym> => True }

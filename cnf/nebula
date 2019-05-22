@@ -2,7 +2,7 @@
 #disable
 location http://localhost:20000
 
-#<galaxy>
-#location /tmp
-#disable
+<galaxy>
+location /tmp
+disable
 
