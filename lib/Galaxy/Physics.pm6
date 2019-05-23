@@ -42,15 +42,4 @@ unit role Galaxy::Physics;
     $!cool   = %!law<galaxy><cool>   // False;
     $!pretty = %!law<galaxy><pretty> // False;
 
-    given %!law<cmd> {
-
-      self.galaxy(    |%!law<galaxy>    ) when 'galaxy';
-      self.star(      |%!law<star>      ) when 'star';
-      self.planet(    |%!law<planet>    ) when 'planet';
-      self.gravity(   |%!law<gravity>   ) when 'gravity';
-      self.blackhole( |%!law<blackhole> ) when 'blackhole';
-      self.spacetime( |%!law<spacetime> ) when 'spacetime';
-
-    }
-
   }

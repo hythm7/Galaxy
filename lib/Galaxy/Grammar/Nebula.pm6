@@ -10,12 +10,8 @@ grammar Galaxy::Grammar::Nebula {
   rule nebula   { <lt> <hostname> <gt> <.nl> <nbllaw>+ % <.nl> }
 
   proto rule nbllaw { * }
-  rule nbllaw:sym<disable>  { <.ws> <sym> }
-  rule nbllaw:sym<location> { <.ws> <sym> <location> }
-
-  proto token location { * }
-  token location:sym<uri>  { <uri>  }
-  token location:sym<path> { <path> }
+  rule nbllaw:sym<disabled>  { <.ws> <sym> }
+  rule nbllaw:sym<location> { <.ws> <sym> <uri> }
 
   token uri { <alpha>+ <colon> <slash> <slash> <hostname> [ <colon> <digit>+ ]? <slash>? <path>? }
 
@@ -37,12 +33,18 @@ grammar Galaxy::Grammar::Nebula {
 
 
 class Galaxy::Grammar::Nebula::Actions {
-  method TOP ( $/ ) { make <nebula> => @<nebula>».ast }
+  method TOP ( $/ ) { make <nebula> => $<nebula>».ast }
 
-  method nebula ( $/ ) { make $<hostname>.Str => $<nbllaw>».ast.hash }
+  method nebula ( $/ ) {
+    my %nebula = $<nbllaw>».ast.hash;
 
-  method nbllaw:sym<disable> ( $/ ) { make ~$<sym> => True }
-  method nbllaw:sym<location> ( $/ ) { make ~$<sym> => $<location>.ast }
+    %nebula<name> = $<hostname>.Str;
+
+    make %nebula;
+  }
+
+  method nbllaw:sym<disabled> ( $/ )  { make $<sym> => True }
+  method nbllaw:sym<location> ( $/ ) { make $<sym> => Cro::Uri.parse($<uri>.Str) }
 
   method location:sym<path> ( $/ ) { make $<path>.IO }
   method location:sym<uri> ( $/ ) { make Cro::Uri.parse($/.Str) }

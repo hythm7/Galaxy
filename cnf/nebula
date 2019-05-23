@@ -1,8 +1,8 @@
 <local>
-#disable
+#disabled
 location http://localhost:20000
 
-<galaxy>
-location /tmp
-disable
+<Helix>
+location http://localhost:20000
+#disabled
 
