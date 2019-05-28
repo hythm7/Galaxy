@@ -1,4 +1,4 @@
-unit role Galaxy::Grammar::Cmd::Cool;
+unit role Galaxy::Grammar::Cmd::PSixy;
 
 token gravity:sym<g>   { «<sym>» }
 

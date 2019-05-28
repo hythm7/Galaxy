@@ -2,10 +2,10 @@
 #use Grammar::Tracer;
 
 use Galaxy::Grammar::Star;
-use Galaxy::Grammar::Cmd::Cool;
+use Galaxy::Grammar::Cmd::PSixy;
 
 grammar Galaxy::Grammar::Cmd {
-  also does Galaxy::Grammar::Cmd::Cool;
+  also does Galaxy::Grammar::Cmd::PSixy;
   also does Galaxy::Grammar::Star;
 
   proto rule TOP { * }
@@ -97,9 +97,9 @@ class Galaxy::Grammar::Cmd::Actions {
   method TOP:sym<galaxy> ( $/ ) {
     my %law;
 
-    %law<cmd>           = <galaxy>;
-    %law<galaxy>        = $<glxlaw>».ast.hash if $<glxlaw>;
-    %law<galaxy><stars> = $<stars>.ast        if $<stars>;
+    %law<cmd>          = <galaxy>;
+    %law<galaxy>       = $<glxlaw>».ast.hash if $<glxlaw>;
+    %law<galaxy><star> = $<stars>.ast        if $<stars>;
 
     make %law;
   }
@@ -107,10 +107,10 @@ class Galaxy::Grammar::Cmd::Actions {
   method TOP:sym<gravity> ( $/ ) {
     my %law;
 
-    %law<cmd>            = <gravity>;
-    %law<galaxy>         = $<glxlaw>».ast.hash if $<glxlaw>;
-    %law<gravity>        = $<grvlaw>».ast.hash if $<grvlaw>;
-    %law<gravity><stars> = $<stars>.ast;
+    %law<cmd>           = <gravity>;
+    %law<galaxy>        = $<glxlaw>».ast.hash if $<glxlaw>;
+    %law<gravity>       = $<grvlaw>».ast.hash if $<grvlaw>;
+    %law<gravity><star> = $<stars>.ast;
 
     make %law;
   }
@@ -118,10 +118,10 @@ class Galaxy::Grammar::Cmd::Actions {
   method TOP:sym<blackhole> ( $/ ) {
     my %law;
 
-    %law<cmd>              = <blackhole>;
-    %law<galaxy>           = $<glxlaw>».ast.hash if $<glxlaw>;
-    %law<blackhole>        = $<blklaw>».ast.hash if $<blklaw>;
-    %law<blackhole><stars> = $<stars>.ast;
+    %law<cmd>             = <blackhole>;
+    %law<galaxy>          = $<glxlaw>».ast.hash if $<glxlaw>;
+    %law<blackhole>       = $<blklaw>».ast.hash if $<blklaw>;
+    %law<blackhole><star> = $<stars>.ast;
 
     make %law;
   }
@@ -129,10 +129,10 @@ class Galaxy::Grammar::Cmd::Actions {
   method TOP:sym<star> ( $/ ) {
     my %law;
 
-    %law<cmd>         = <star>;
-    %law<galaxy>      = $<glxlaw>».ast.hash if $<glxlaw>;
-    %law<star>        = $<star>».ast.hash   if $<strlaw>;
-    %law<star><stars> = $<stars>.ast;
+    %law<cmd>        = <star>;
+    %law<galaxy>     = $<glxlaw>».ast.hash if $<glxlaw>;
+    %law<star>       = $<star>».ast.hash   if $<strlaw>;
+    %law<star><star> = $<stars>.ast;
 
     make %law;
   }

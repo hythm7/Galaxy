@@ -36,22 +36,23 @@ multi method galaxy ( ) {
   say '--- galaxy ---';
 }
 
-multi method galaxy ( :@stars! ) {
+multi method galaxy ( :@star! ) {
   say '--- galaxy star ---';
+  say @star;
 }
 
 multi method galaxy ( :$event! ) {
   say '--- galaxy event ---';
 }
 
-method gravity ( :$origin = $!origin, :$cluster = False, :@stars!  ) {
+method gravity ( :$origin = $!origin, :$cluster = False, :@star!  ) {
   say '--- gravity ---';
 
-  my @candi = @stars.hyper.map({ $!nebula.locate: |%^star });
+  my @candi = @star.hyper.map( -> %star { $!nebula.locate: |%star });
   say @candi;
 }
 
-method blackhole ( :$cluster = False, :@stars!  ) {
+method blackhole ( :$cluster = False, :@star!  ) {
   say '--- blackhole ---';
 }
 
@@ -59,7 +60,7 @@ method planet ( :$planet!  ) {
   say '--- planet ---';
 }
 
-method star ( :@stars!  ) {
+method star ( :@star!  ) {
   say '--- star ---';
 }
 

@@ -31,10 +31,18 @@ submethod BUILD ( :@source ) {
 
 }
 
-method locate ( Str :$name!, Version :$age = Version.new, Str :$core = 'x86_64', Int :$form, Str :$tag ) {
+method locate ( Str :$name!, Version :$age, Str :$core, Int :$form, Str :$tag ) {
 
-  my $url = 'cand?core=x86_64&name=' ~ $name;
-  my @candi = @!source.hyper.map( *.get: :$url ).flat.unique(:with(&[eqv]));
+  my @url;
+
+  @url.push: 'star';
+  @url.push: $name;
+  @url.push: $age   if $age;
+  @url.push: $core  if $core;
+  @url.push: $form  if $form;
+  @url.push: $tag   if $tag;
+
+  my @candi = @!source.hyper.map( *.get: url => @url.join('/') ).flat.unique(:with(&[eqv]));
 
   @candi;
 }

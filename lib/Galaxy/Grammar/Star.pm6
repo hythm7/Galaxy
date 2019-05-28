@@ -13,7 +13,7 @@ role Galaxy::Grammar::Star {
   token starname:sym<age>  { <name> <.hyphen> <age> }
   token starname:sym<name> { <name> }
 
-  token name { [ [ <.alnum>+ <!before <dot>> ]+ % <hyphen> ] }
+  token name { [ [ <.alnum>+ <asterisk>? <!before <dot>> ]+ % <hyphen> ] }
   token age  { [ [ <.digit>+ | '*' ]+ % <dot> ] <plus>? }
   token core { 'x86_64' | 'i386' }
   token form { <.digit>+ }
@@ -23,9 +23,10 @@ role Galaxy::Grammar::Star {
 
   token xyz    { 'xyz' }
 
-  token dot    { '.' }
-  token plus   { '+' }
-  token hyphen { '-' }
+  token dot      { '.' }
+  token plus     { '+' }
+  token hyphen   { '-' }
+  token asterisk { '*' }
 }
 
 role Galaxy::Grammar::Star::Actions {
