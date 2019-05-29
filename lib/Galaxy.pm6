@@ -47,11 +47,37 @@ multi method galaxy ( :$event! ) {
 
 method gravity ( :$origin = $!origin, :$cluster = False, :@star!  ) {
   say '--- gravity ---';
+  #my @candis = @star.hyper.map( -> %star { $!nebula.locate: |%star });
 
-  my @candi = @star.hyper.map( -> %star { $!nebula.locate: |%star });
-  say @candi;
+  my %star = @star.head;
+
+  my @resolved = self.resolve: :%star;
+
+  say @resolved;
+
+
 }
 
+
+method resolve ( :$star ) {
+
+  flat gather for $!nebula.locate(|$star) -> $star {
+
+    next unless self.accepts: :$star;
+
+    for flat $star<cluster> -> $star {;
+      take self.resolve: :$star if $star;
+    }
+
+    take $star;
+
+  }
+
+}
+
+method accepts ( :$star ) {
+  return True;
+}
 method blackhole ( :$cluster = False, :@star!  ) {
   say '--- blackhole ---';
 }
