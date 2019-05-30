@@ -15,8 +15,8 @@ my class Source {
   }
 
   method get ( :$url! ) {
-    my $resp = await $!nebula.get: $url;
-    my @candi = await $resp.body;
+    my $resp  = await $!nebula.get: $url;
+    my @candi = flat await $resp.body;
     @candi;
   }
 

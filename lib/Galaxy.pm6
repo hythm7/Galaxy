@@ -1,3 +1,4 @@
+use DDT;
 use Galaxy::Physics;
 use Galaxy::Gravity;
 use Galaxy::Blackhole;
@@ -53,7 +54,8 @@ method gravity ( :$origin = $!origin, :$cluster = False, :@star!  ) {
 
   my @resolved = self.resolve: :%star;
 
-  say @resolved;
+  ddt @resolved.map({ .<name>, .<age> });
+  #ddt @resolved;
 
 
 }
@@ -61,22 +63,46 @@ method gravity ( :$origin = $!origin, :$cluster = False, :@star!  ) {
 
 method resolve ( :$star ) {
 
-  flat gather for $!nebula.locate(|$star) -> $star {
+  my @candi = $!nebula.locate: |$star;
 
-    next unless self.accepts: :$star;
+  for @candi -> $candi {
 
-    for flat $star<cluster> -> $star {;
-      take self.resolve: :$star if $star;
+    say "Accepts {$candi<name>} {$candi<age>} " ~ self.accepts: :$candi;
+    next unless self.accepts: :$candi;
+
+    my @resolved = flat gather {
+
+    take (self.resolve( star => $_ ) for $candi<cluster>.flat)  if $candi<cluster>;
+    take $candi;
+
     }
 
-    take $star;
-
+    return @resolved;
   }
 
 }
 
-method accepts ( :$star ) {
-  return True;
+method accepts ( :$candi ) {
+  given $candi {
+    when .<name> ~~ 'timo' {
+      return True;
+    }
+    when .<name> ~~ 'nimo' {
+      return True;
+    }
+    when .<name> ~~ 'perl6' {
+      return True if .<age> ~~ '0.0.1';
+      return False;
+    }
+    when .<name> ~~ 'rakudo' {
+      return True;
+    }
+    when .<name> ~~ 'galaxy' {
+      return True;
+    }
+
+    default { return False }
+  }
 }
 method blackhole ( :$cluster = False, :@star!  ) {
   say '--- blackhole ---';
