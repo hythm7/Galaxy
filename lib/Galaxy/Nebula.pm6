@@ -42,7 +42,15 @@ method locate ( Str :$name!, Str :$age, Str :$core, Int :$form, Str :$tag ) {
   @url.push: $form  if $form;
   @url.push: $tag   if $tag;
 
-  my @candi = @!source.hyper.map( *.get: url => @url.join('/') ).flat.unique(:with(&[eqv]));
+  #my @candi = @!source.hyper.map( *.get: url => @url.join('/') ).flat.unique(:with(&[eqv]));
+  my @candi = @!source.grep( not *.disabled ).hyper.map(
+    *.get: url => @url.join('/')).flat.sort( &latest ).squish( with => &[eqv] );
 
   @candi;
+}
+
+sub latest ( %a, %b ) {
+
+  Version.new(%b<age>) <=> Version.new(%a<age>) or %b<form> <=> %a<form>;
+
 }

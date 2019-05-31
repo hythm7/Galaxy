@@ -65,25 +65,25 @@ method resolve ( :$star ) {
 
   my @candi = $!nebula.locate: |$star;
 
-  for @candi -> $candi {
+  flat gather for @candi -> $candi {
 
-    say "Accepts {$candi<name>} {$candi<age>} " ~ self.accepts: :$candi;
     next unless self.accepts: :$candi;
 
-    my @resolved = flat gather {
-
-    take (self.resolve( star => $_ ) for $candi<cluster>.flat)  if $candi<cluster>;
-    take $candi;
-
+    for $candi<cluster>.flat -> $star {
+      take self.resolve: :$star if $star;
     }
 
-    return @resolved;
+    take $candi;
   }
+
 
 }
 
 method accepts ( :$candi ) {
   given $candi {
+    when .<name> ~~ 'andromeda' {
+      return True;
+    }
     when .<name> ~~ 'timo' {
       return True;
     }
