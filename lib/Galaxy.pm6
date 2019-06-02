@@ -70,7 +70,7 @@ method resolve ( :@star ) {
 
 }
 
-method !candi ( :$star, Int :$indent = 0 ) {
+method !candi ( :$star ) {
 
   for $!nebula.locate( |$star ) -> $candi {
 
@@ -79,7 +79,7 @@ method !candi ( :$star, Int :$indent = 0 ) {
     for $candi<cluster>.flat -> $star {
 
       next unless $star;
-      self!candi: :$star, indent => $indent + 2;
+      self!candi: :$star;
     }
 
     my $won = @*winner.first({ .<name> ~~ $candi<name> });
