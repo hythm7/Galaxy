@@ -87,7 +87,7 @@ method !candi ( :$star, Int :$indent = 0 ) {
     if $won {
 
       fail "{$star<name>} {$star<age>} conflicts with {$won<age>}"
-        unless Version.new($won<age>) ~~ Version.new($star<age>);
+        unless Version.new($won<age>) ~~ Version.new($star<age> // '');
 
       next;
     }
