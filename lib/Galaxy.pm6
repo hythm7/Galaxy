@@ -52,35 +52,67 @@ method gravity ( :$origin = $!origin, :$cluster = False, :@star!  ) {
 
   my %star = @star.head;
 
-  my @resolved = self.resolve: :%star;
+  my @resolved = self.resolve: :@star;
 
   ddt @resolved.map({ .<name>, .<age> });
-  #ddt @resolved;
 
 
 }
 
+method resolve ( :@star ) {
+  my @*winner;
 
-method resolve ( :$star ) {
-
-  my @candi = $!nebula.locate: |$star;
-
-  flat gather for @candi -> $candi {
-
-    next unless self.accepts: :$candi;
-
-    for $candi<cluster>.flat -> $star {
-      take self.resolve: :$star if $star;
-    }
-
-    take $candi;
+  for @star -> $star {
+    self!candi: :$star;
   }
 
+  @*winner;
 
 }
 
-method accepts ( :$candi ) {
+method !candi ( :$star, Int :$indent = 0 ) {
+
+  for $!nebula.locate( |$star ) -> $candi {
+
+    next unless self!accepts: :$candi;
+
+    for $candi<cluster>.flat -> $star {
+
+      next unless $star;
+      self!candi: :$star, indent => $indent + 2;
+    }
+
+    my $won = @*winner.first({ .<name> ~~ $candi<name> });
+
+    if $won {
+
+      fail "{$star<name>} {$star<age>} conflicts with {$won<age>}"
+        unless Version.new($won<age>) ~~ Version.new($star<age>);
+
+      next;
+    }
+    else {
+
+      @*winner.push: $candi;
+      last;
+    }
+  }
+
+  my $winner = @*winner.first({ .<name> ~~ $star<name> });
+
+  fail "Can not find candis for $star<name>" unless $winner;
+
+  return @*winner;
+
+
+
+}
+
+method !accepts ( :$candi ) {
   given $candi {
+    when .<name> ~~ 'hythm' {
+      return True;
+    }
     when .<name> ~~ 'andromeda' {
       return True;
     }
@@ -91,8 +123,7 @@ method accepts ( :$candi ) {
       return True;
     }
     when .<name> ~~ 'perl6' {
-      return True if .<age> ~~ '0.0.1';
-      return False;
+      return True;
     }
     when .<name> ~~ 'rakudo' {
       return True;
