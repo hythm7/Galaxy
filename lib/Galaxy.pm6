@@ -15,6 +15,12 @@ has Nebula    $!nebula;
 
 submethod TWEAK ( ) {
 
+  $!db.query('select * from star').hashes.hyper.map( -> %star {
+    say %star;
+    #%!star.push: ( %star<name> => Star.new: |%star; );
+
+  });
+
   $!nebula = Nebula.new: source => %!law<nebula>;
 
   given %!law<cmd> {
@@ -39,7 +45,10 @@ multi method galaxy ( ) {
 
 multi method galaxy ( :@star! ) {
   say '--- galaxy star ---';
-  say @star;
+  for @star -> %star {
+
+    say %!star{%star<name>};
+  }
 }
 
 multi method galaxy ( :$event! ) {
@@ -48,9 +57,7 @@ multi method galaxy ( :$event! ) {
 
 method gravity ( :$origin = $!origin, :$cluster = False, :@star!  ) {
   say '--- gravity ---';
-  #my @candis = @star.hyper.map( -> %star { $!nebula.locate: |%star });
 
-  my %star = @star.head;
 
   my @resolved = self.resolve: :@star;
 

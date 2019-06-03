@@ -7,8 +7,9 @@ role Galaxy::Grammar::Star {
 
   proto token starname { * }
 
-  token starname:sym<tag>  { <name> <.hyphen> <age> <.hyphen> <core> <.hyphen> <form> <.hyphen> <tag> <ext>? }
-  token starname:sym<form> { <name> <.hyphen> <age> <.hyphen> <core> <.hyphen> <form> <ext>? }
+  token starname:sym<ext>  { <name> <.hyphen> <age> <.hyphen> <core> <.hyphen> <form> <.hyphen> <tag> <ext> }
+  token starname:sym<tag>  { <name> <.hyphen> <age> <.hyphen> <core> <.hyphen> <form> <.hyphen> <tag> }
+  token starname:sym<form> { <name> <.hyphen> <age> <.hyphen> <core> <.hyphen> <form> }
   token starname:sym<core> { <name> <.hyphen> <age> <.hyphen> <core> }
   token starname:sym<age>  { <name> <.hyphen> <age> }
   token starname:sym<name> { <name> }
@@ -41,14 +42,14 @@ role Galaxy::Grammar::Star::Actions {
 
   method starname:sym<age> ( $/ ) {
     my $name = $<name>.Str;
-    my $age  = $<age>.ast;
+    my $age  = $<age>.Str;
 
     make  { :$name, :$age }
   }
 
   method starname:sym<core> ( $/ ) {
     my $name = $<name>.Str;
-    my $age  = $<age>.ast;
+    my $age  = $<age>.Str;
     my $core = $<core>.Str;
 
     make  { :$name, :$age, :$core }
@@ -57,7 +58,7 @@ role Galaxy::Grammar::Star::Actions {
 
   method starname:sym<form> ( $/ ) {
     my $name = $<name>.Str;
-    my $age  = $<age>.ast;
+    my $age  = $<age>.Str;
     my $core = $<core>.Str;
     my $form = $<form>.Int;
 
@@ -66,7 +67,7 @@ role Galaxy::Grammar::Star::Actions {
 
   method starname:sym<tag> ( $/ ) {
     my $name = $<name>.Str;
-    my $age  = $<age>.ast;
+    my $age  = $<age>.Str;
     my $core = $<core>.Str;
     my $form = $<form>.Int;
     my $tag  = $<tag>.Str;
@@ -74,6 +75,15 @@ role Galaxy::Grammar::Star::Actions {
     make  { :$name, :$age, :$core, :$form, :$tag }
   }
 
-  method age ( $/ ) { make Version.new: $/ }
+  method starname:sym<ext> ( $/ ) {
+    my $name = $<name>.Str;
+    my $age  = $<age>.Str;
+    my $core = $<core>.Str;
+    my $form = $<form>.Int;
+    my $tag  = $<tag>.Str;
+    my $ext  = $<ext>.Str;
+
+    make  { :$name, :$age, :$core, :$form, :$tag, :$ext }
+  }
 
 }

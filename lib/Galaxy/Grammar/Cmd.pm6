@@ -161,7 +161,6 @@ class Galaxy::Grammar::Cmd::Actions {
 
 
   method stars ( $/ ) { make $<starname>».ast }
-  method age ( $/ )   { make $/.Str }
 
   method glxlaw:sym<yolo>    ( $/ ) { make <yolo>    => True }
   method glxlaw:sym<origin>  ( $/ ) { make <origin>  => $<path>.IO }
