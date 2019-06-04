@@ -22,7 +22,7 @@ has $!db;
 
 submethod BUILD ( ) {
 
-  my $cmd = Galaxy::Grammar::Cmd.new.parse(@*ARGS, :actions(Galaxy::Grammar::Cmd::Actions)).ast;
+  my $cmd = Galaxy::Grammar::Cmd.new.parse(@*ARGS, actions => Galaxy::Grammar::Cmd::Actions).ast;
 
   $!origin = $cmd<galaxy><origin> // '/'.IO;
   $!bulge  = $!origin.add: 'etc/galaxy/';
@@ -37,8 +37,8 @@ submethod BUILD ( ) {
   my $nblfile = $!origin.add: 'etc/galaxy/nebula';
 
   # now law file? generate one!
-  my $cnf = Galaxy::Grammar::Cnf.new.parsefile($lawfile, :actions(Galaxy::Grammar::Cnf::Actions)).ast;
-  my $nbl = Galaxy::Grammar::Nebula.parsefile($nblfile, :actions(Galaxy::Grammar::Nebula::Actions)).ast;
+  my $cnf = Galaxy::Grammar::Cnf.new.parsefile($lawfile, actions => Galaxy::Grammar::Cnf::Actions).ast;
+  my $nbl = Galaxy::Grammar::Nebula.parsefile($nblfile,  actions => Galaxy::Grammar::Nebula::Actions).ast;
 
   %!law   = $cnf.merge: $cmd.merge: $nbl;
 
@@ -90,6 +90,7 @@ method !init-db ( ) {
       star  text,
       name  text,
       age   text,
+      core  text,
       form  int,
       tag   text
     )
@@ -101,6 +102,8 @@ method !init-db ( ) {
     ( 'rakudo', '0.0.1', 'x86_64', 0, 'glx', 'http://localhost/', '' ),
     ( 'timo',   '0.0.1', 'x86_64', 0, 'glx', 'http://localhost/', '' ),
     ( 'nimo',   '0.0.1', 'x86_64', 0, 'glx', 'http://localhost/', '' ),
+    ( 'ain',    '0.0.1', 'x86_64', 0, 'glx', 'http://localhost/', '' ),
+    ( 'vega',   '0.0.1', 'x86_64', 0, 'glx', 'http://localhost/', '' ),
 
   );
 
@@ -118,15 +121,18 @@ method !init-db ( ) {
 
   my @cluster = (
 
-    ( 'timo', 'galaxy', '0.0.1+', '', '' ),
-    ( 'timo', 'rakudo', '0.0.1+', '', '' ),
-    ( 'nimo', 'rakudo', '0.0.1+', '', '' ),
+    ( 'timo', 'galaxy', '0.0.1+', Nil, Nil, Nil ),
+    ( 'timo', 'rakudo', '0.0.1+', Nil, Nil, Nil ),
+    ( 'nimo', 'rakudo', '0.0.1+', Nil, Nil, Nil ),
+    ( 'ain',  'galaxy', '0.0.1+', Nil, Nil, Nil ),
+    ( 'vega', 'ain',    '0.0.1+', Nil, Nil, Nil ),
+    ( 'vega', 'nimo',   '0.0.1+', Nil, Nil, Nil ),
 
   );
 
   $!db.query: 'insert into star    values ( ?, ?, ?, ?, ?, ?, ? )', |$_ for @star;
   $!db.query: 'insert into planet  values ( ?, ?, ?, ?, ?, ? )',    |$_ for @planet;
-  $!db.query: 'insert into cluster values ( ?, ?, ?, ?, ? )',       |$_ for @cluster;
+  $!db.query: 'insert into cluster values ( ?, ?, ?, ?, ?, ? )',    |$_ for @cluster;
 
 
 }

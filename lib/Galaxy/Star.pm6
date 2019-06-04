@@ -11,7 +11,7 @@ has Str     $.tag  is required;
 has Str     $.chksum;
 
 has Galaxy::Planet @.planet;
-has Galaxy::Star   @!cluster;
+has @!cluster;
 
 has Cro::Uri       $.location;
 
@@ -39,10 +39,10 @@ submethod BUILD (
 method cluster ( ) {
   @!cluster;
 }
-method cluster-add ( Galaxy::Star :$star ) {
-  @!cluster.push: $star;
-}
 
-method id ( ) {
-  ( $!name, $!age, $!core, $!form, $!tag ).join: '-';
+method gist ( ) {
+  put ( $!name, $!age, $!core, $!form, $!tag ).join( '-' );
+  for @!cluster -> %cluster {
+     put '└ ' ~ ( %cluster<name>, %cluster<age> ).join( '-' );
+  }
 }

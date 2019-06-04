@@ -11,28 +11,23 @@ unit class Galaxy:ver<0.0.1>;
   also does Galaxy::Physics;
 
 has Star      %!star;
-has           %!cluster;
 has Nebula    $!nebula;
 
 submethod TWEAK ( ) {
 
-
   $!db.query( 'select * from star' ).hashes.hyper.map( -> %star {
 
-    my @planet = $!db.query( 'select * from planet where star = $star', star => %star<name> ).hashes;
+    my @planet  = $!db.query( 'select * from planet  where star = $star', star => %star<name> ).hashes;
+    my @cluster = $!db.query( 'select * from cluster where star = $star', star => %star<name> ).hashes;
+
     %star.push: ( :@planet );
+    %star.push: ( :@cluster );
+
 
     %!star.push: ( %star<name> => Star.new: |%star; );
 
   });
 
-  $!db.query( 'select * from cluster' ).hashes.hyper.map( -> %cluster {
-
-    %!cluster.push: ( %cluster<star> =>  %cluster );
-
-    %!star{%cluster<star>}.cluster-add: star => %!star{%cluster<name>};
-
-  });
 
   $!nebula = Nebula.new: source => %!law<nebula>;
 
@@ -54,17 +49,20 @@ submethod TWEAK ( ) {
 
 multi method galaxy ( ) {
   say '--- galaxy ---';
+    say self!stable;
 }
 
 multi method galaxy ( :@star! ) {
   say '--- galaxy star ---';
 
-  for @star -> %star {
+}
 
-    my $star =  %!star{%star<name>};
+method !stable ( ) {
 
-    self!cluster: :$star;
-  }
+  so all %!star.values.hyper.map( -> $star {
+    so all $star.cluster.map( -> %cluster { %!star{%cluster<name>} ≅ %cluster });
+  });
+
 }
 
 multi method galaxy ( :$event! ) {
@@ -147,8 +145,16 @@ method spacetime ( :$event!  ) {
   say '--- spacetime ---';
 }
 
-method !cluster ( Star :$star! ) {
-  .say for %!star{$star.name}.cluster;
+multi infix:<≅> ( Galaxy::Star $star, %cluster --> Bool:D ) {
+
+  return False unless $star;
+  return False unless $star.name ~~ %cluster<name>;
+  return False unless $star.age  ~~ Version.new: %cluster<age> // '';
+  return False unless $star.core ~~ %cluster<core>;
+  return False unless $star.form ~~ %cluster<form>;
+  return False unless $star.tag  ~~ %cluster<tag>;
+
+  True;
 }
 
 method !accepts ( :$candi ) {
