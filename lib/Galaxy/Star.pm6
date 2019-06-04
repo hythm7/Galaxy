@@ -11,10 +11,11 @@ has Str     $.tag  is required;
 has Str     $.chksum;
 
 has Galaxy::Planet @.planet;
-has Cro::Uri       $.location;
-has                @.cluster;
+has Galaxy::Star   @!cluster;
 
-method BUILD (
+has Cro::Uri       $.location;
+
+submethod BUILD (
 
   :$!name,
   :$age,
@@ -25,13 +26,21 @@ method BUILD (
   :$location,
   :@planet,
 
-  :@cluster,
+  :@!cluster,
 
   ) {
 
   $!age      = Version.new: $age;
   $!form     = $form.Int;
   $!location = Cro::Uri.parse: $location;
+  @!planet   = Galaxy::Planet.new: |$_ for @planet;
+}
+
+method cluster ( ) {
+  @!cluster;
+}
+method cluster-add ( Galaxy::Star :$star ) {
+  @!cluster.push: $star;
 }
 
 method id ( ) {

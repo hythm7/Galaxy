@@ -48,7 +48,7 @@ grammar Galaxy::Grammar::Cmd {
 
   token path { <[ a..z A..Z 0..9 \-_.!~*'():@&=+$,/ ]>+ }
 
-  token galaxy    { «'galaxy'»    | <?> }
+  token galaxy    { <?> }
 
   proto token gravity { * }
 	token gravity:sym<gravity>   { «<sym>» }

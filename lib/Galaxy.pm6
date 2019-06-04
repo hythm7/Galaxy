@@ -11,13 +11,26 @@ unit class Galaxy:ver<0.0.1>;
   also does Galaxy::Physics;
 
 has Star      %!star;
+has           %!cluster;
 has Nebula    $!nebula;
 
 submethod TWEAK ( ) {
 
-  $!db.query('select * from star').hashes.hyper.map( -> %star {
-    say %star;
-    #%!star.push: ( %star<name> => Star.new: |%star; );
+
+  $!db.query( 'select * from star' ).hashes.hyper.map( -> %star {
+
+    my @planet = $!db.query( 'select * from planet where star = $star', star => %star<name> ).hashes;
+    %star.push: ( :@planet );
+
+    %!star.push: ( %star<name> => Star.new: |%star; );
+
+  });
+
+  $!db.query( 'select * from cluster' ).hashes.hyper.map( -> %cluster {
+
+    %!cluster.push: ( %cluster<star> =>  %cluster );
+
+    %!star{%cluster<star>}.cluster-add: star => %!star{%cluster<name>};
 
   });
 
@@ -45,9 +58,12 @@ multi method galaxy ( ) {
 
 multi method galaxy ( :@star! ) {
   say '--- galaxy star ---';
+
   for @star -> %star {
 
-    say %!star{%star<name>};
+    my $star =  %!star{%star<name>};
+
+    self!cluster: :$star;
   }
 }
 
@@ -115,6 +131,26 @@ method !candi ( :$star ) {
 
 }
 
+method blackhole ( :$cluster = False, :@star!  ) {
+  say '--- blackhole ---';
+}
+
+method planet ( :$planet!  ) {
+  say '--- planet ---';
+}
+
+method star ( :@star!  ) {
+  say '--- star ---';
+}
+
+method spacetime ( :$event!  ) {
+  say '--- spacetime ---';
+}
+
+method !cluster ( Star :$star! ) {
+  .say for %!star{$star.name}.cluster;
+}
+
 method !accepts ( :$candi ) {
   given $candi {
     when .<name> ~~ 'hythm' {
@@ -141,19 +177,4 @@ method !accepts ( :$candi ) {
 
     default { return False }
   }
-}
-method blackhole ( :$cluster = False, :@star!  ) {
-  say '--- blackhole ---';
-}
-
-method planet ( :$planet!  ) {
-  say '--- planet ---';
-}
-
-method star ( :@star!  ) {
-  say '--- star ---';
-}
-
-method spacetime ( :$event!  ) {
-  say '--- spacetime ---';
 }

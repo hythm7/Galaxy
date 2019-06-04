@@ -119,8 +119,8 @@ method !init-db ( ) {
   my @cluster = (
 
     ( 'timo', 'galaxy', '0.0.1+', '', '' ),
-    ( 'timo', 'perl6',  '0.0.1+', '', '' ),
-    ( 'nimo', 'perl6',  '0.0.1+', '', '' ),
+    ( 'timo', 'rakudo', '0.0.1+', '', '' ),
+    ( 'nimo', 'rakudo', '0.0.1+', '', '' ),
 
   );
 
