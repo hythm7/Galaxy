@@ -5,8 +5,8 @@ use Galaxy::Grammar::Star;
 use Galaxy::Grammar::Cmd::PSixy;
 
 grammar Galaxy::Grammar::Cmd {
-  also does Galaxy::Grammar::Cmd::PSixy;
   also does Galaxy::Grammar::Star;
+  also does Galaxy::Grammar::Cmd::PSixy;
 
   proto rule TOP { * }
 

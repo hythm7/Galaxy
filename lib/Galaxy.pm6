@@ -55,6 +55,8 @@ multi method galaxy ( ) {
 multi method galaxy ( :@star! ) {
   say '--- galaxy star ---';
 
+  .say for @star;
+
 }
 
 method !stable ( ) {

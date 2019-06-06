@@ -5,7 +5,7 @@ use lib <lib>;
 use Galaxy::Grammar::Star;
 
 
-my $star = 'rakudo-star-0.0.4-x86_64-77-hhh.xyz';
+my $star = 'rakudo-star-0.0.4';
 
 my $actions = Galaxy::Grammar::Star::Actions;
 
