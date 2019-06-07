@@ -35,47 +35,53 @@ class Galaxy::Grammar::Star::Actions {
   method TOP ( $/ ) { make $<starname>.ast }
 
   method starname:sym<name> ( $/ ) {
+    my $star = $/.Str;
     my $name = $<name>.Str;
 
-    make  { :$name }
+    make  { :$star, :$name }
   }
 
   method starname:sym<age> ( $/ ) {
+    my $star = $/.Str;
     my $name = $<name>.Str;
     my $age  = $<age>.Str;
 
-    make  { :$name, :$age }
+    make  { :$star, :$name, :$age }
   }
 
   method starname:sym<core> ( $/ ) {
+    my $star = $/.Str;
     my $name = $<name>.Str;
     my $age  = $<age>.Str;
     my $core = $<core>.Str;
 
-    make  { :$name, :$age, :$core }
+    make  { :$star, :$name, :$age, :$core }
   }
 
 
   method starname:sym<form> ( $/ ) {
+    my $star = $/.Str;
     my $name = $<name>.Str;
     my $age  = $<age>.Str;
     my $core = $<core>.Str;
     my $form = $<form>.Int;
 
-    make  { :$name, :$age, :$core, :$form }
+    make  { :$star, :$name, :$age, :$core, :$form }
   }
 
   method starname:sym<tag> ( $/ ) {
+    my $star = $/.Str;
     my $name = $<name>.Str;
     my $age  = $<age>.Str;
     my $core = $<core>.Str;
     my $form = $<form>.Int;
     my $tag  = $<tag>.Str;
 
-    make  { :$name, :$age, :$core, :$form, :$tag }
+    make  { :$star, :$name, :$age, :$core, :$form, :$tag }
   }
 
   method starname:sym<ext> ( $/ ) {
+    my $star = $/.Str;
     my $name = $<name>.Str;
     my $age  = $<age>.Str;
     my $core = $<core>.Str;
@@ -83,7 +89,7 @@ class Galaxy::Grammar::Star::Actions {
     my $tag  = $<tag>.Str;
     my $ext  = $<ext>.Str;
 
-    make  { :$name, :$age, :$core, :$form, :$tag, :$ext }
+    make  { :$star, :$name, :$age, :$core, :$form, :$tag, :$ext }
   }
 
 }
