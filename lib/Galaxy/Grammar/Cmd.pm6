@@ -1,11 +1,11 @@
 #no precompilation;
-#use Grammar::Tracer;
+#use Grammar::Tracer::Compact;
 
 use Galaxy::Grammar::Star;
 use Galaxy::Grammar::Cmd::PSixy;
 
 grammar Galaxy::Grammar::Cmd {
-  also does Galaxy::Grammar::Star;
+  also is Galaxy::Grammar::Star;
   also does Galaxy::Grammar::Cmd::PSixy;
 
   proto rule TOP { * }
@@ -92,7 +92,7 @@ grammar Galaxy::Grammar::Cmd {
 
 
 class Galaxy::Grammar::Cmd::Actions {
-  also does Galaxy::Grammar::Star::Actions;
+  also is Galaxy::Grammar::Star::Actions;
 
   method TOP:sym<galaxy> ( $/ ) {
     my %law;

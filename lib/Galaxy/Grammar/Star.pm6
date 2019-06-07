@@ -1,7 +1,7 @@
 #no precompilation;
 #use Grammar::Tracer;
 
-role Galaxy::Grammar::Star {
+grammar Galaxy::Grammar::Star {
 
   token TOP { <starname> }
 
@@ -30,7 +30,7 @@ role Galaxy::Grammar::Star {
   token asterisk { '*' }
 }
 
-role Galaxy::Grammar::Star::Actions {
+class Galaxy::Grammar::Star::Actions {
 
   method TOP ( $/ ) { make $<starname>.ast }
 
