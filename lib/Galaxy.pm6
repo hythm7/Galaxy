@@ -42,9 +42,6 @@ submethod TWEAK ( ) {
 
   }
 
-
-
-
 }
 
 multi method galaxy ( ) {
@@ -75,25 +72,25 @@ method gravity ( :$origin = $!origin, :$cluster = False, :@star!  ) {
   say '--- gravity ---';
 
 
-  my @resolved = self.resolve: :@star;
+  my @resolved = self.resolve: :@star, :$cluster;
 
-  ddt @resolved.map({ .<name>, .<age> });
+  ddt @resolved;
 
 
 }
 
-method resolve ( :@star ) {
+method resolve ( :@star, Bool :$cluster ) {
   my @*winner;
 
   for @star -> $star {
-    self!candi: :$star;
+    self!candi: :$star, :$cluster;
   }
 
   @*winner;
 
 }
 
-method !candi ( :$star ) {
+method !candi ( :$star, :$cluster = False ) {
 
   for $!nebula.locate( |$star ) -> $candi {
 
@@ -101,7 +98,8 @@ method !candi ( :$star ) {
 
     for $candi<cluster>.flat -> $star {
 
-      next unless $star;
+      last unless $cluster;
+      last unless $star;
       self!candi: :$star;
     }
 
@@ -161,16 +159,16 @@ multi infix:<≅> ( Galaxy::Star $star, %cluster --> Bool:D ) {
 
 method !accepts ( :$candi ) {
   given $candi {
-    when .<name> ~~ 'hythm' {
+    when .<name> ~~ 'gzip' {
       return True;
     }
-    when .<name> ~~ 'andromeda' {
+    when .<name> ~~ 'bash' {
       return True;
     }
-    when .<name> ~~ 'timo' {
+    when .<name> ~~ 'acl' {
       return True;
     }
-    when .<name> ~~ 'nimo' {
+    when .<name> ~~ 'coreutils' {
       return True;
     }
     when .<name> ~~ 'perl6' {

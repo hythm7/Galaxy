@@ -31,7 +31,7 @@ submethod BUILD ( :@source ) {
 
 }
 
-method locate ( Str :$name!, Str :$age, Str :$core, Int :$form, Str :$tag ) {
+method locate ( Str :$name!, :$age, :$core, :$form, :$tag ) {
 
   my @url;
 

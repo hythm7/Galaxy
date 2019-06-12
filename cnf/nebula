@@ -1,6 +1,6 @@
 <Helix>
-location http://localhost:20000
+location http://localhost:7777
 #disabled
 <Local>
-location http://localhost:20000
-#disabled
+location http://localhost:7777
+disabled
