@@ -14,24 +14,13 @@ use Galaxy::Nebula;
 unit class Galaxy:ver<0.0.1>;
   also does Galaxy::Physics;
 
-has Star      %!star;
-has Nebula    $!nebula;
+has Star   %!star;
+has Nebula $!nebula;
 
 submethod TWEAK ( ) {
 
-  $!db.query( 'select * from star' ).hashes.hyper.map( -> %star {
 
-    my @planet  = $!db.query( 'select * from planet  where star = $star', star => %star<name> ).hashes;
-    my @cluster = $!db.query( 'select * from cluster where star = $star', star => %star<name> ).hashes;
-
-    %star.push: ( :@planet );
-    %star.push: ( :@cluster );
-
-
-    %!star.push: ( %star<name> => Star.new: |%star; );
-
-  });
-
+  $!disk.all-stars.map({ %!star.push( .<star> => Star.new: |$_ ) });
 
   $!nebula = Nebula.new: source => %!law<nebula>;
 
@@ -50,13 +39,16 @@ submethod TWEAK ( ) {
 
 multi method galaxy ( ) {
   say '--- galaxy ---';
-    self!stable;
+  say %!star;
+  #self!stable;
 }
 
 multi method galaxy ( :@star! ) {
   say '--- galaxy star ---';
 
-  .say for @star;
+  for @star -> %star {
+    say %!star.values.first( * ≅ %star );
+  }
 
 }
 
@@ -80,7 +72,7 @@ method gravity ( :$origin = $!origin, :$cluster = False, :@star!  ) {
   my $tmp = tempdir;
 
   for @resolved -> %star {
-    
+
     my $stardir = $tmp.IO.add: %star<star>;
     $stardir.mkdir;
 
@@ -95,17 +87,20 @@ method gravity ( :$origin = $!origin, :$cluster = False, :@star!  ) {
     my Archive::Libarchive::Entry $entry .= new;
     while $a.next-header($entry) {
       %star<planet>.push:
-      {
-        name  => $entry.pathname,
-        owner => $entry.uid,
-        gid   => $entry.gid,
-        type  => $entry.filetype,
-        mode  => $entry.mode,
-      }
+      %(
+        path => $entry.pathname,
+        type => $entry.filetype,
+        size => $entry.size,
+        perm => $entry.perm,
+        mode => $entry.mode,
+      );
 
       $a.data-skip;
     }
 
+
+    #$!disk.clean;
+    $!disk.add-star: |%star;
 
     #my $e = Archive::Libarchive.new: operation => LibarchiveExtract, file => $xyz.Str,
     #  flags => ARCHIVE_EXTRACT_TIME +| ARCHIVE_EXTRACT_PERM +| ARCHIVE_EXTRACT_ACL +| ARCHIVE_EXTRACT_FFLAGS;
@@ -185,14 +180,16 @@ method spacetime ( :$event!  ) {
   say '--- spacetime ---';
 }
 
-multi infix:<≅> ( Galaxy::Star $star, %cluster --> Bool:D ) {
+multi infix:<≅> ( Star $star, %star --> Bool:D ) {
 
   return False unless $star;
-  return False unless $star.name ~~ %cluster<name>;
-  return False unless $star.age  ~~ Version.new: %cluster<age> // '';
-  return False unless $star.core ~~ %cluster<core>;
-  return False unless $star.form ~~ %cluster<form>;
-  return False unless $star.tag  ~~ %cluster<tag>;
+  return True  if $star.star ~~ %star<star>;
+
+  return False unless $star.name ~~ %star<name>;
+  return False unless $star.age  ~~ Version.new: %star<age> // '';
+  return False unless $star.core ~~ %star<core>;
+  return False unless $star.form ~~ %star<form>;
+  return False unless $star.tag  ~~ %star<tag>;
 
   True;
 }
