@@ -33,8 +33,11 @@ submethod BUILD ( ) {
 
   self!init-db;
 
+  #say $!origin;
   my $lawfile = $!origin.add: 'etc/galaxy/law';
   my $nblfile = $!origin.add: 'etc/galaxy/nebula';
+
+  #say $lawfile;
 
   # now law file? generate one!
   my $cnf = Galaxy::Grammar::Cnf.new.parsefile($lawfile, actions => Galaxy::Grammar::Cnf::Actions).ast;
@@ -62,12 +65,16 @@ method !init-db ( ) {
     SQL
 
   $!db.execute: q:to /SQL/;
+
     create table if not exists star (
+      star     text primary key not null,
       name     text,
       age      text,
       core     text,
       form     int,
       tag      text,
+      source   text,
+      desc     text,
       location text,
       chksum   text
     )
@@ -75,64 +82,24 @@ method !init-db ( ) {
 
   $!db.execute: q:to /SQL/;
     create table if not exists planet (
-      star  text,
       path  text,
       owner int,
       gid   int,
       type  text,
-      mode  int
+      mode  int,
+      star text references star(star) ON DELETE CASCADE
     )
     SQL
 
 
   $!db.execute: q:to /SQL/;
     create table if not exists cluster (
-      star  text,
-      name  text,
-      age   text,
-      core  text,
-      form  int,
-      tag   text
+      name text,
+      age  text,
+      core text,
+      form int,
+      tag  text,
+      star text references star(star) ON DELETE CASCADE
     )
     SQL
-
-  my @star = (
-
-    ( 'galaxy', '0.0.1', 'x86_64', 0, 'glx', 'http://localhost/', '' ),
-    ( 'rakudo', '0.0.1', 'x86_64', 0, 'glx', 'http://localhost/', '' ),
-    ( 'timo',   '0.0.1', 'x86_64', 0, 'glx', 'http://localhost/', '' ),
-    ( 'nimo',   '0.0.1', 'x86_64', 0, 'glx', 'http://localhost/', '' ),
-    ( 'ain',    '0.0.1', 'x86_64', 0, 'glx', 'http://localhost/', '' ),
-    ( 'vega',   '0.0.1', 'x86_64', 0, 'glx', 'http://localhost/', '' ),
-
-  );
-
-  my @planet = (
-
-    ( 'galaxy', '/etc/galaxy',           0, 0, 'd', 644 ),
-    ( 'galaxy', '/etc/galaxy/laws',      0, 0, 'f', 644 ),
-    ( 'galaxy', '/etc/galaxy/nebula',    0, 0, 'f', 644 ),
-    ( 'galaxy', '/etc/galaxy/nebula',    0, 0, 'f', 644 ),
-    ( 'galaxy', '/var/galaxy/',          0, 0, 'd', 644 ),
-    ( 'galaxy', '/var/galaxy/galaxy.db', 0, 0, 'd', 644 ),
-
-  );
-
-
-  my @cluster = (
-
-    ( 'timo', 'galaxy', '0.0.1+', Nil, Nil, Nil ),
-    ( 'timo', 'rakudo', '0.0.1+', Nil, Nil, Nil ),
-    ( 'nimo', 'rakudo', '0.0.1+', Nil, Nil, Nil ),
-    ( 'ain',  'galaxy', '0.0.1+', Nil, Nil, Nil ),
-    ( 'vega', 'ain',    '0.0.1+', Nil, Nil, Nil ),
-    ( 'vega', 'nimo',   '0.0.1+', Nil, Nil, Nil ),
-
-  );
-
-  $!db.query: 'insert into star    values ( ?, ?, ?, ?, ?, ?, ? )', |$_ for @star;
-  $!db.query: 'insert into planet  values ( ?, ?, ?, ?, ?, ? )',    |$_ for @planet;
-  $!db.query: 'insert into cluster values ( ?, ?, ?, ?, ?, ? )',    |$_ for @cluster;
-
-
 }

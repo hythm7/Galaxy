@@ -35,7 +35,7 @@ method locate ( Str :$name!, :$age, :$core, :$form, :$tag ) {
 
   my @url;
 
-  @url.push: 'star';
+  @url.push: 'meta';
   @url.push: $name;
   @url.push: $age   if $age;
   @url.push: $core  if $core;

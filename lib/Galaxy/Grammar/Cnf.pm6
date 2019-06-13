@@ -14,7 +14,7 @@ grammar Galaxy::Grammar::Cnf {
   rule glxlaw:sym<cool>   { <.ws> <sym> }
   rule glxlaw:sym<yolo>   { <.ws> <sym> }
   rule glxlaw:sym<core>   { <.ws> <sym> <core> }
-  rule glxlaw:sym<origin> { <.ws> <sym> <path> }
+  #rule glxlaw:sym<origin> { <.ws> <sym> <path> }
   rule glxlaw:sym<name>   { <.ws> <sym> \w+ }
 
   proto rule grvlaw { * }
