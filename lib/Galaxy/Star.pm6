@@ -9,6 +9,7 @@ has Version  $.age  is required;
 has Str      $.core is required;
 has Int      $.form is required;
 has Str      $.tag  is required;
+has IO       $.origin;
 has          $.chksum;
 has          @.cluster;
 has          @.law;
@@ -29,6 +30,7 @@ submethod BUILD (
        :$!chksum,
   Str:D :$source,
   Str:D :$location,
+  Str   :$origin,
         :@planet,
         :@!cluster,
         :@!law,
@@ -36,6 +38,7 @@ submethod BUILD (
 
   ) {
 
+  $!origin   = $origin.IO;
   $!age      = Version.new: $age;
   $!source   = Cro::Uri.parse: $location;
   $!location = Cro::Uri.parse: $location;

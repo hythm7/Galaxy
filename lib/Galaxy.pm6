@@ -47,7 +47,7 @@ multi method galaxy ( :@star! ) {
   say '--- galaxy star ---';
 
   for @star -> %star {
-    say %!star.values.first( * ≅ %star );
+    say %!star.values.first( * ≅ %star ).origin;
   }
 
 }
@@ -64,7 +64,7 @@ multi method galaxy ( :$event! ) {
   say '--- galaxy event ---';
 }
 
-method gravity ( :$origin = $!origin, :$cluster = False, :@star!  ) {
+method gravity ( IO :$origin = '/'.IO, :$cluster = False, :@star!  ) {
   say '--- gravity ---';
 
   my @resolved = self.resolve: :@star, :$cluster;
@@ -72,6 +72,10 @@ method gravity ( :$origin = $!origin, :$cluster = False, :@star!  ) {
   my $tmp = tempdir;
 
   for @resolved -> %star {
+
+    #say $origin;
+    %star.push: ( origin => ~$origin ) if $origin;
+    #say %star;
 
     my $stardir = $tmp.IO.add: %star<star>;
     $stardir.mkdir;
@@ -82,31 +86,29 @@ method gravity ( :$origin = $!origin, :$cluster = False, :@star!  ) {
       download => $xyz.Str,
       :followlocation ).perform;
 
-    my $buffer = slurp $xyz, :bin;
-    my $a = Archive::Libarchive.new: operation => LibarchiveRead, file => $buffer;
-    my Archive::Libarchive::Entry $entry .= new;
-    while $a.next-header($entry) {
-      %star<planet>.push:
-      %(
-        path => $entry.pathname,
-        type => $entry.filetype,
-        size => $entry.size,
-        perm => $entry.perm,
-        mode => $entry.mode,
-      );
 
-      $a.data-skip;
-    }
+    my $a = Archive::Libarchive.new: operation => LibarchiveExtract, file => $xyz.Str,
+      flags => ARCHIVE_EXTRACT_TIME +| ARCHIVE_EXTRACT_PERM +| ARCHIVE_EXTRACT_ACL +| ARCHIVE_EXTRACT_FFLAGS;
 
+    $a.extract: &extract, $!origin.add($origin).Str;
+    $a.close;
 
-    #$!disk.clean;
+    $!disk.clean;
     $!disk.add-star: |%star;
 
-    #my $e = Archive::Libarchive.new: operation => LibarchiveExtract, file => $xyz.Str,
-    #  flags => ARCHIVE_EXTRACT_TIME +| ARCHIVE_EXTRACT_PERM +| ARCHIVE_EXTRACT_ACL +| ARCHIVE_EXTRACT_FFLAGS;
+  sub extract ( Archive::Libarchive::Entry $e --> Bool ) {
 
-    #$e.extract: ~$stardir;
-    #$e.close;
+    %star<planet>.push:
+    %(
+      path   => $e.pathname,
+      type   => $e.filetype,
+      mode   => $e.mode,
+      perm   => $e.perm,
+      size   => $e.size,
+    );
+
+    True;
+  }
 
 
   }

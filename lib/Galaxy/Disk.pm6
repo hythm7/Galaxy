@@ -77,6 +77,7 @@ method add-star (
   Str:D :$core!,
   Int:D :$form!,
   Str:D :$tag!,
+  Str:D :$origin!,
   Str:D :$source!,
   Str   :$desc,
   Str   :$location,
@@ -88,9 +89,9 @@ method add-star (
 ) {
 
   $!disk.query(
-    'insert into star ( star, name, age, core, form, tag, source, desc, location )
-      values ( $star, $name, $age, $core, $form, $tag, $source, $desc, $location )',
-      :$star, :$name, :$age, :$core, :$form, :$tag, :$source, :$desc, :$location
+    'insert into star ( star, name, age, core, form, tag, origin, source, desc, location )
+      values ( $star, $name, $age, $core, $form, $tag, $origin, $source, $desc, $location )',
+      :$star, :$name, :$age, :$core, :$form, :$tag, :$origin, :$source, :$desc, :$location
   );
 
     $!disk.query(
@@ -146,6 +147,7 @@ method !init-disk ( ) {
       core     text,
       form     int,
       tag      text,
+      origin   text,
       source   text,
       desc     text,
       location text,
