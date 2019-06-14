@@ -64,6 +64,28 @@ multi method galaxy ( :$event! ) {
   say '--- galaxy event ---';
 }
 
+method blackhole ( :$cluster = False, :@star!  ) {
+  say '--- blackhole ---';
+
+  for @star -> %star {
+
+    my $star = %!star.values.first( * ≅ %star );
+
+    for $star.planet *.path. -> $planet {
+
+      my $file = $!origin.add( $star.origin ).add( $planet.path );
+      my $dir  = $file.dirname;
+      $file.unlink;
+      $dir.IO.rmdir unless dir $dir;
+
+    }
+
+    $!disk.remove-star: star => $star.star;
+
+  }
+}
+
+
 method gravity ( IO :$origin = '/'.IO, :$cluster = False, :@star!  ) {
   say '--- gravity ---';
 
@@ -160,12 +182,6 @@ method !candi ( :$star, :$cluster = False ) {
 
   return @*winner;
 
-
-
-}
-
-method blackhole ( :$cluster = False, :@star!  ) {
-  say '--- blackhole ---';
 }
 
 method planet ( :$planet!  ) {
