@@ -73,9 +73,6 @@ method gravity ( IO :$origin = '/'.IO, :$cluster = False, :@star!  ) {
 
   for @resolved -> %star {
 
-    #say $origin;
-    %star.push: ( origin => ~$origin ) if $origin;
-    #say %star;
 
     my $stardir = $tmp.IO.add: %star<star>;
     $stardir.mkdir;
@@ -93,7 +90,8 @@ method gravity ( IO :$origin = '/'.IO, :$cluster = False, :@star!  ) {
     $a.extract: &extract, $!origin.add($origin).Str;
     $a.close;
 
-    $!disk.clean;
+    #$!disk.clean;
+    %star<origin> = ~$origin;
     $!disk.add-star: |%star;
 
   sub extract ( Archive::Libarchive::Entry $e --> Bool ) {
