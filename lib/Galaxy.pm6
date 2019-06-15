@@ -155,6 +155,9 @@ method !candi ( :%star, :$cluster = False ) {
 
       last unless $cluster;
       last unless %star;
+
+      # try my %won here!
+
       self!candi: :%star;
     }
 
