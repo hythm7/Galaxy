@@ -71,7 +71,7 @@ method blackhole ( :$cluster = False, :@star!  ) {
 
     my $star = %!star.values.first( * ≅ %star );
 
-    for $star.planet *.path. -> $planet {
+    for $star.planet -> $planet {
 
       my $file = $!origin.add( $star.origin ).add( $planet.path );
       my $dir  = $file.dirname;
@@ -95,7 +95,6 @@ method gravity ( IO :$origin = '/'.IO, :$cluster = False, :@star!  ) {
 
   for @resolved -> %star {
 
-
     my $stardir = $tmp.IO.add: %star<star>;
     $stardir.mkdir;
 
@@ -116,20 +115,19 @@ method gravity ( IO :$origin = '/'.IO, :$cluster = False, :@star!  ) {
     %star<origin> = ~$origin;
     $!disk.add-star: |%star;
 
-  sub extract ( Archive::Libarchive::Entry $e --> Bool ) {
+    sub extract ( Archive::Libarchive::Entry $e --> Bool ) {
 
-    %star<planet>.push:
-    %(
-      path   => $e.pathname,
-      type   => $e.filetype,
-      mode   => $e.mode,
-      perm   => $e.perm,
-      size   => $e.size,
-    );
+      %star<planet>.push:
+      %(
+        path   => $e.pathname,
+        type   => $e.filetype,
+        mode   => $e.mode,
+        perm   => $e.perm,
+        size   => $e.size,
+      );
 
-    True;
-  }
-
+      True;
+    }
 
   }
 
@@ -139,46 +137,47 @@ method gravity ( IO :$origin = '/'.IO, :$cluster = False, :@star!  ) {
 method resolve ( :@star, Bool :$cluster ) {
   my @*winner;
 
-  for @star -> $star {
-    self!candi: :$star, :$cluster;
+  for @star -> %star {
+    self!candi: :%star, :$cluster;
   }
 
   @*winner;
 
 }
 
-method !candi ( :$star, :$cluster = False ) {
+method !candi ( :%star, :$cluster = False ) {
 
-  for $!nebula.locate( |$star ) -> $candi {
+  for $!nebula.locate( |%star ) -> %candi {
 
-    next unless self!accepts: :$candi;
+    next unless %candi ~~ self;
 
-    for $candi<cluster>.flat -> $star {
+    for %candi<cluster>.flat -> %star {
 
       last unless $cluster;
-      last unless $star;
-      self!candi: :$star;
+      last unless %star;
+      self!candi: :%star;
     }
 
-    my $won = @*winner.first({ .<name> ~~ $candi<name> });
+    my %won = @*winner.first({ .<name> ~~ %candi<name> }).hash;
 
-    if $won {
+    if %won {
+      say 'won';
 
-      fail "{$star<name>} {$star<age>} conflicts with {$won<age>}"
-        unless Version.new($won<age>) ~~ Version.new($star<age> // '');
+      fail "{%star<name>} {%star<age>} conflicts with {%won<age>}"
+        unless Version.new(%won<age>) ~~ Version.new(%star<age> // '');
 
       next;
     }
     else {
 
-      @*winner.push: $candi;
+      @*winner.push: %candi;
       last;
     }
   }
 
-  my $winner = @*winner.first({ .<name> ~~ $star<name> });
+  my $winner = @*winner.first({ .<name> ~~ %star<name> });
 
-  fail "Can not find candis for $star<name>" unless $winner;
+  fail "Can not find candis for %star<name>" unless $winner;
 
   return @*winner;
 
@@ -210,8 +209,9 @@ multi infix:<≅> ( Star $star, %star --> Bool:D ) {
   True;
 }
 
-method !accepts ( :$candi ) {
-  given $candi {
+multi method ACCEPTS ( Galaxy:D: %candi ) {
+
+  given %candi {
     when .<name> ~~ 'gzip' {
       return True;
     }
