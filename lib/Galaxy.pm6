@@ -47,7 +47,7 @@ multi method galaxy ( :@star! ) {
   say '--- galaxy star ---';
 
   for @star -> %star {
-    say %!star.values.first( * ≅ %star ).origin;
+    say %!star.values.first( * ≅ %star ).cluster;
   }
 
 }
@@ -135,7 +135,7 @@ method gravity ( IO :$origin = '/'.IO, :$cluster = False, :@star!  ) {
 }
 
 method resolve ( :@star, Bool :$cluster ) {
-  my @*winner;
+  my ( @*winner, @*upgraded, @*downgraded );
 
   for @star -> %star {
     self!candi: :%star, :$cluster;
@@ -164,7 +164,6 @@ method !candi ( :%star, :$cluster = False ) {
     my %won = @*winner.first({ .<name> ~~ %candi<name> }).hash;
 
     if %won {
-      say 'won';
 
       fail "{%star<name>} {%star<age>} conflicts with {%won<age>}"
         unless Version.new(%won<age>) ~~ Version.new(%star<age> // '');
@@ -198,9 +197,18 @@ method spacetime ( :$event!  ) {
   say '--- spacetime ---';
 }
 
+multi method ACCEPTS ( Galaxy:D: %candi --> Bool:D ) {
+
+  return True unless %!star{%candi<star>};
+  return True if %candi ~~ all %!star.values.grep({ any .cluster.map({ .<name> ~~ %candi<name> }) }); 
+  return False; 
+
+}
+
 multi infix:<≅> ( Star $star, %star --> Bool:D ) {
 
   return False unless $star;
+
   return True  if $star.star ~~ %star<star>;
 
   return False unless $star.name ~~ %star<name>;
@@ -212,31 +220,4 @@ multi infix:<≅> ( Star $star, %star --> Bool:D ) {
   True;
 }
 
-multi method ACCEPTS ( Galaxy:D: %candi ) {
 
-  given %candi {
-    when .<name> ~~ 'gzip' {
-      return True;
-    }
-    when .<name> ~~ 'bash' {
-      return True;
-    }
-    when .<name> ~~ 'acl' {
-      return True;
-    }
-    when .<name> ~~ 'coreutils' {
-      return True;
-    }
-    when .<name> ~~ 'perl6' {
-      return True;
-    }
-    when .<name> ~~ 'rakudo' {
-      return True;
-    }
-    when .<name> ~~ 'galaxy' {
-      return True;
-    }
-
-    default { return False }
-  }
-}

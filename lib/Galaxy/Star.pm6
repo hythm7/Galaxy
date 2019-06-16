@@ -55,3 +55,16 @@ method gist ( ) {
      #put '└ ' ~ ( %cluster<name>, %cluster<age> ).join( '-' );
   #}
 }
+
+multi method ACCEPTS ( %star --> Bool:D ) {
+
+  my %cluster = @!cluster.first({ .<name> ~~ %star<name> }).hash;
+
+  return False unless Version.new( %star<age> )  ~~ Version.new( %cluster<age> // '' );
+  #  return False unless %star<core> ~~ %cluster<core>;
+  #  return False unless %star<form> ~~ %cluster<form>;
+  #  return False unless %star<tag>  ~~ %cluster<tag>;
+
+  return True;
+
+}
