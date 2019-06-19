@@ -20,7 +20,7 @@ has Nebula $!nebula;
 submethod TWEAK ( ) {
 
 
-  $!disk.all-stars.map({ %!star.push( .<star> => Star.new: |$_ ) });
+  $!disk.all-stars.map({ %!star.push( .<name> => Star.new: |$_ ) });
 
   $!nebula = Nebula.new: source => %!law<nebula>;
 
@@ -63,28 +63,6 @@ method !stable ( ) {
 multi method galaxy ( :$event! ) {
   say '--- galaxy event ---';
 }
-
-method blackhole ( :$cluster = False, :@star!  ) {
-  say '--- blackhole ---';
-
-  for @star -> %star {
-
-    my $star = %!star.values.first( * ≅ %star );
-
-    for $star.planet -> $planet {
-
-      my $file = $!origin.add( $star.origin ).add( $planet.path );
-      my $dir  = $file.dirname;
-      $file.unlink;
-      $dir.IO.rmdir unless dir $dir;
-
-    }
-
-    $!disk.remove-star: star => $star.star;
-
-  }
-}
-
 
 method gravity ( IO :$origin = '/'.IO, :$cluster = False, :@star!  ) {
   say '--- gravity ---';
@@ -134,6 +112,30 @@ method gravity ( IO :$origin = '/'.IO, :$cluster = False, :@star!  ) {
 
 }
 
+method blackhole ( :$cluster = False, :@star!  ) {
+  say '--- blackhole ---';
+
+  for @star -> %star {
+
+    my $star = %!star.values.first( * ≅ %star );
+
+    for $star.planet -> $planet {
+
+      my $file = $!origin.add( $star.origin ).add( $planet.path );
+      my $dir  = $file.dirname;
+
+      $file.unlink;
+      $dir.IO.rmdir unless dir $dir;
+
+    }
+
+    $!disk.remove-star: star => $star.star;
+
+  }
+}
+
+
+
 method resolve ( :@star, Bool :$cluster ) {
   my ( @*winner, @*upgraded, @*downgraded );
 
@@ -147,8 +149,14 @@ method resolve ( :@star, Bool :$cluster ) {
 
 method !candi ( :%star, :$cluster = False ) {
 
+say %star;
+
+  # Warning: Spaghetti incoming!
+
   for $!nebula.locate( |%star ) -> %candi {
 
+    say %candi<name>, %candi<age>;
+    say %candi ~~ self;
     next unless %candi ~~ self;
 
     for %candi<cluster>.flat -> %star {
@@ -156,32 +164,29 @@ method !candi ( :%star, :$cluster = False ) {
       last unless $cluster;
       last unless %star;
 
-      # try my %won here!
-
-      self!candi: :%star;
+      self!candi: :%star, :$cluster;
     }
 
     my %won = @*winner.first({ .<name> ~~ %candi<name> }).hash;
 
     if %won {
 
+      last if Version.new(%won<age>) ~~ Version.new(%star<age> // '');
+
+      my @cluster = @*winner.grep({ any .<cluster>>><name> ~~ %won<name> }).map({ .<cluster>.first({ .<name> ~~ %won<name> }) });
+
       fail "{%star<name>} {%star<age>} conflicts with {%won<age>}"
-        unless Version.new(%won<age>) ~~ Version.new(%star<age> // '');
+        unless Version.new(%candi<age>) ~~ all @cluster.map({ Version.new($_<age> // '') });
 
-      next;
+      @*winner .= grep: not * eqv %won;
+
     }
-    else {
-
       @*winner.push: %candi;
       last;
-    }
   }
 
-  my $winner = @*winner.first({ .<name> ~~ %star<name> });
-
-  fail "Can not find candis for %star<name>" unless $winner;
-
-  return @*winner;
+  fail "Can not find candis for {%star<name>} {%star<age>}"
+    unless @*winner.first({ .<name> ~~ %star<name> });
 
 }
 
@@ -199,17 +204,15 @@ method spacetime ( :$event!  ) {
 
 multi method ACCEPTS ( Galaxy:D: %candi --> Bool:D ) {
 
-  return True unless %!star{%candi<star>};
-  return True if %candi ~~ all %!star.values.grep({ any .cluster.map({ .<name> ~~ %candi<name> }) }); 
-  return False; 
+  return True unless %!star{%candi<name>};
+  return True if %candi ~~ all %!star.values.grep({ any .cluster.map({ .<name> ~~ %candi<name> }) });
+  return False;
 
 }
 
 multi infix:<≅> ( Star $star, %star --> Bool:D ) {
 
   return False unless $star;
-
-  return True  if $star.star ~~ %star<star>;
 
   return False unless $star.name ~~ %star<name>;
   return False unless $star.age  ~~ Version.new: %star<age> // '';
