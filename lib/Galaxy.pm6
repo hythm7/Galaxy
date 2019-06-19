@@ -47,7 +47,10 @@ multi method galaxy ( :@star! ) {
   say '--- galaxy star ---';
 
   for @star -> %star {
-    say %!star.values.first( * ≅ %star ).cluster;
+    my $star =  %!star.values.first( * ≅ %star );
+
+    say $star;
+    .say for $star.planet.map: *.path.Str;
   }
 
 }
@@ -149,14 +152,10 @@ method resolve ( :@star, Bool :$cluster ) {
 
 method !candi ( :%star, :$cluster = False ) {
 
-say %star;
-
   # Warning: Spaghetti incoming!
 
   for $!nebula.locate( |%star ) -> %candi {
 
-    say %candi<name>, %candi<age>;
-    say %candi ~~ self;
     next unless %candi ~~ self;
 
     for %candi<cluster>.flat -> %star {
