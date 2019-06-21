@@ -14,7 +14,7 @@ grammar Galaxy::Grammar::Star {
   token starname:sym<age>  { <name> <.hyphen> <age> }
   token starname:sym<name> { <name> }
 
-  token name { [ [ <.alnum>+ <asterisk>? <!before <dot>> ]+ % <hyphen> ] }
+  token name { [ [ [ <.alnum> | <plus> ]+ <asterisk>? <!before <dot>> ]+ % <hyphen> ] }
   token age  { [ [ <.digit>+ | '*' ]+ % <dot> ] <plus>? }
   token core { 'x86_64' | 'i386' }
   token form { <.digit>+ }
