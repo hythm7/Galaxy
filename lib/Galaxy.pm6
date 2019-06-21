@@ -49,8 +49,7 @@ multi method galaxy ( :@star! ) {
   for @star -> %star {
     my $star =  %!star.values.first( * ≅ %star );
 
-    say $star;
-    .say for $star.planet.map: *.path.Str;
+    .say for $star.planet.map( -> $planet { ~$star.origin.add: $planet.path } );
   }
 
 }
