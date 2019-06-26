@@ -37,10 +37,10 @@ method locate ( Str :$name!, :$age, :$core, :$form, :$tag ) {
 
   @url.push: 'meta';
   @url.push: $name;
-  @url.push: $age   if $age;
-  @url.push: $core  if $core;
-  @url.push: $form  if $form;
-  @url.push: $tag   if $tag;
+  @url.push: $age   if defined $age;
+  @url.push: $core  if defined $core;
+  @url.push: $form  if defined $form;
+  @url.push: $tag   if defined $tag;
 
   #my @candi = @!source.hyper.map( *.get: url => @url.join('/') ).flat.unique(:with(&[eqv]));
   my @candi = @!source.grep( not *.disabled ).hyper.map(

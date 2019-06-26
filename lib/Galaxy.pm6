@@ -20,7 +20,7 @@ has Nebula $!nebula;
 submethod TWEAK ( ) {
 
 
-  $!disk.all-stars.map({ %!star.push( .<name> => Star.new: |$_ ) });
+  %!star = $!disk.all-stars.map({ .<name> => Star.new: |$_ });
 
   $!nebula = Nebula.new: source => %!law<nebula>;
 
