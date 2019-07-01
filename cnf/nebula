@@ -1,5 +1,5 @@
 <Helix>
-location http://localhost:7777
+location http://galaxy:7777
 #disabled
 <Local>
 location http://localhost:7777
