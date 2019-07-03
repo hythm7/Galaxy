@@ -126,8 +126,8 @@ method blackhole ( :$cluster = False, :@star!  ) {
       my $file = $!origin.add( $star.origin ).add( $planet.path );
       my $dir  = $file.dirname;
 
-      $file.unlink;
-      $dir.IO.rmdir unless dir $dir;
+      #$file.unlink;
+      #$dir.IO.rmdir unless dir $dir;
 
     }
 
