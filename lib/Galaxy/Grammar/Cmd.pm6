@@ -66,16 +66,16 @@ grammar Galaxy::Grammar::Cmd {
 	token planet:sym<planet>   { «<sym>» }
 
   proto token origin { * }
-  token origin:sym<origin> { <sym> }
+  token origin:sym<origin> { «<sym>» }
 
   proto token cluster { * }
-  token cluster:sym<cluster> { <sym> }
+  token cluster:sym<cluster> { «<sym>» }
 
   proto token pretty { * }
-  token pretty:sym<pretty>  { <sym> }
+  token pretty:sym<pretty>  { «<sym>» }
 
   proto token yolo { * }
-  token yolo:sym<yolo>  { <sym> }
+  token yolo:sym<yolo>  { «<sym>» }
 
   token stars { [ <starname>+ % <.blank> ] }
 

@@ -13,6 +13,6 @@ token star:sym<> { «<sym>» }
 
 token planet:sym<p> { «<sym>» }
 
-token origin:sym<o>  { <sym> }
-token cluster:sym<c> { <sym> }
-token yolo:sym<✓>    { <sym> }
+token origin:sym<o>  { «<sym>» }
+token cluster:sym<c> { «<sym>» }
+token yolo:sym<✓>    { «<sym>» }
