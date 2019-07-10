@@ -46,7 +46,6 @@ multi method galaxy ( ) {
 multi method galaxy ( :@star! ) {
   say '--- galaxy star ---';
 
-  say 'opppppensssssl';
   for @star -> %star {
     my $star =  %!star.values.first( * ≅ %star );
 
