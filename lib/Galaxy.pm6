@@ -39,7 +39,7 @@ submethod TWEAK ( ) {
 
 multi method galaxy ( ) {
   say '--- galaxy ---';
-  say %!star;
+  .say for %!star.keys;
   #self!stable;
 }
 
